@@ -1,0 +1,763 @@
+--==============================================================================
+-- File:     game.lua
+-- Author:   Kevin Harris
+-- Modified: April 15, 2015
+-- Descript: 
+--==============================================================================
+
+-- TODO: Set USE_TEMP_TABLES to false to switch from the loading of table data
+-- to the loading of the actual game data!
+USE_TEMP_TABLES = false
+SHOW_COLUMN_MARKERS = false
+
+local composer = require( "composer" )
+local scene = composer.newScene()
+
+local collision = require( "collision" )
+
+require( "utilities" )
+require( "collision" )
+require( "load_imageTypes" )
+require( "load_levelData" )
+
+local screenW = display.contentWidth
+local screenH = display.contentHeight
+local halfW = display.contentWidth * 0.5
+
+local startAnimating = false
+local prevX = 0
+local prevY = 0
+
+--==============================================================================
+-- Function: scene:create( event (table) )
+-- Author:   Kevin Harris
+-- Modified: April 15, 2015
+-- Returns:  
+-- Descript: Called when the scene's view does not exist.
+--==============================================================================
+function scene:create( event )
+
+	local sceneGroup = self.view
+
+	-- Initialize misc. global variables.
+
+	gGameMode = "menu"
+	gPaused = false
+	gDisplayDebugInfo = false
+	gMuteSound = false
+	gFireLaser = false
+	gFireThrusters = false
+	gSpeed = 0
+	gElapsedTimeForThruster = 0
+	gElapsedTimeDropping = 0
+	gImageSheets = {}
+	gSequenceData = {}
+
+	gBackgroundImage = display.newImageRect( "images/space.png", display.contentWidth, display.contentHeight )
+	gBackgroundImage.anchorX = 0
+	gBackgroundImage.anchorY = 0
+	gBackgroundImage.x, gBackgroundImage.y = 0, 0
+
+	--
+	-- Player...
+	--
+
+	gPlayer =
+	{
+		images =
+		{
+			fighter =
+			{
+				image = display.newImageRect( "images/fighter.png", 137, 36 ),
+				width = 137,
+				height = 36
+-- TODO: Can Corona build a collision map?
+				--collisionMap = newCollisionMap( "Images/Player/fighter.png" )
+			},
+
+			laser =
+			{
+				width = 12,
+				height = 3
+				--collisionMap = newCollisionMap( "Images/Player/laser.png" )
+			},
+
+			missile =
+			{
+				width = 19,
+				height = 3
+				--collisionMap = newCollisionMap( "Images/Player/missile.png" )
+			}
+		},
+
+		x = 100,
+		y = display.contentHeight / 2,
+		shields = 100,
+		score = 0,
+		state = "normal",
+		numMissiles = 0,
+		activeWeapon = "laser",
+		rateOfFire = 150,
+		speed = 100,
+		active = true
+	}
+
+	gPlayer.images.fighter.image.anchorX = 0
+    gPlayer.images.fighter.image.anchorY = 0
+	gPlayer.images.fighter.image.x = gPlayer.x
+	gPlayer.images.fighter.image.y = gPlayer.y
+
+    -- For the "fighter.png" image to line up correctly with the animated frames drawn
+    -- from the "animated_fighter.png" image, we will need to apply an offset.
+    gPlayer.offsetYForCollision = 30
+
+	--
+	-- Explosions...
+	--
+
+	gExplosions =
+	{
+		onscreen = {}
+	}
+
+	--
+	-- Power Ups...
+	--
+
+	gPowerUps =
+	{
+		shieldBonus = 10,
+		missilesBonus = 10,
+		
+		onscreen = {}
+	}
+
+	--
+	-- Projectiles...
+	--
+
+	gProjectiles =
+	{
+		player = {},
+		enemy = {}
+	}
+
+	--
+	-- Sprites and level data...
+	--
+
+	local fullPath = system.pathForFile( "data/imageTypes.csv", system.ResourceDirectory )
+
+	gSprites =
+	{
+		imageTypes = loadImageTypes( fullPath ),
+
+		onscreen = {}
+	}
+
+	fullPath = system.pathForFile( "data/level1.level", system.ResourceDirectory )
+
+	gLevelData = loadLevelData( fullPath )
+
+	--
+    -- Setup a scrolling star field.
+    --
+
+    gStarField = {}
+
+    for i = 1, 50 do
+
+		local speed = math.random( 1, 3 )
+
+        gStarField[i] =
+        {
+			star = display.newCircle( math.random( 0, screenW ), math.random( 0, screenH ), speed ),
+            speed = speed
+        }
+
+		gStarField[i].star:setFillColor( 255, 255, 255 )
+
+    end
+
+   	gLeftBorder = display.newRect(-500,0,500, display.contentHeight)
+	gLeftBorder.anchorX = 0
+	gLeftBorder.anchorY = 0
+	gLeftBorder:setFillColor(0,0,0,255)
+
+	gRightBorder = display.newRect(display.contentWidth,0,500,display.contentHeight)
+	gRightBorder.anchorX = 0
+	gRightBorder.anchorY = 0
+	gRightBorder:setFillColor(0,0,0,255)
+
+end
+
+--==============================================================================
+-- Function: scene:show( event (table) )
+-- Author:   Kevin Harris
+-- Modified: December 17, 2014
+-- Returns:
+-- Descript:
+--==============================================================================
+function scene:show( event )
+	
+	local sceneGroup = self.view
+	local phase = event.phase
+	
+	if phase == "will" then
+		-- Called when the scene is still off screen and is about to move on screen
+		
+		startAnimating = true
+
+		Runtime:addEventListener( "enterFrame", update )
+		
+	elseif phase == "did" then
+		-- Called when the scene is now on screen
+		-- 
+		-- INSERT code here to make the scene come alive
+		-- e.g. start timers, begin animation, play audio, etc.
+	end	
+end
+
+--==============================================================================
+-- Function: scene:hide( event (table) )
+-- Author:   Kevin Harris
+-- Modified: December 17, 2014
+-- Returns:
+-- Descript:
+--==============================================================================
+function scene:hide( event )
+	
+	local sceneGroup = self.view
+	local phase = event.phase
+	
+	if event.phase == "will" then
+		-- Called when the scene is on screen and is about to move off screen
+		--
+		-- INSERT code here to pause the scene
+		-- e.g. stop timers, stop animation, unload sounds, etc.)
+	elseif phase == "did" then
+		-- Called when the scene is now off screen
+		
+		gLastDrawTime = nil
+		gLevelTimeElapsed = nil
+		gElapsedTime = nil
+	end	
+end
+
+--==============================================================================
+-- Function: scene:destroy( event (table) )
+-- Author:   Kevin Harris
+-- Modified: September 25, 2013
+-- Returns:  
+-- Descript: If scene's view is removed, scene:destroyScene() will be called 
+--           just prior to destruction.
+--==============================================================================
+function scene:destroy( event )
+
+	local sceneGroup = self.view
+
+end
+
+--==============================================================================
+-- Function: scene:update( event (table) )
+-- Author:   Kevin Harris
+-- Modified: September 25, 2013
+-- Returns:  
+-- Descript: Called once per frame to update game.
+--==============================================================================
+function update( event )
+
+	eventTime = event.time * 0.001
+	
+	if startAnimating == false then
+		--print( "event.time * 0.001 = " .. tostring(event.time * 0.001) )
+		return
+	else
+		if gLevelTimeElapsed == nil then
+			--gLevelStartTime = event.time
+			gLastDrawTime = eventTime
+			gLevelTimeElapsed = 0
+			gElapsedTime = 0
+		end
+	end
+
+	gElapsedTime = eventTime - gLastDrawTime
+	gLastDrawTime = eventTime
+	gLevelTimeElapsed = gLevelTimeElapsed + gElapsedTime
+
+	--
+	-- Go through the level data and see if any sprites need to be
+	-- spawned during this update.
+	--
+
+	for i,v in ipairs( gLevelData ) do
+
+		if gLevelTimeElapsed >= v.timeToSpawn then
+
+			createSprite( v ) -- Based on the level data, spawn a sprite!
+			v.spawned = true  -- Mark the level data entry for removal.
+
+		else
+
+			-- As soon as we hit a sprite whose spawn time has not yet expired -
+			-- we know that all the other sprites in the table are not ready as 
+			-- well, since the table is sorted by time.
+			break
+
+		end
+
+	end
+	
+	-- Check for players death!
+	if gPlayer.shields <= 0 and gPlayer.active == true then
+
+        createExplosion( "explosionBig", gPlayer.x + 40, gPlayer.y + gPlayer.offsetYForCollision )
+        gPlayer.active = false
+
+		gPlayer.images.fighter.image:removeSelf()
+
+		gPlayer.x = 100
+		gPlayer.y = display.contentHeight / 2
+
+    end
+
+	local prevX = gPlayer.x
+    local prevY = gPlayer.y
+
+	if gPlayer.active then
+
+		if gPlayer.activeWeapon == "missile" and gPlayer.numMissiles <= 0 then
+			gPlayer.activeWeapon = "laser"
+			gPlayer.rateOfFire = 150
+		end
+		
+		-- Fire like there's no tomorrow!
+		firePlayerProjectile( gPlayer.activeWeapon )
+			
+		if gFireThrusters then
+			gElapsedTimeDropping = 0
+			gElapsedTimeForThruster = gElapsedTimeForThruster + gElapsedTime
+			gSpeed = -(300 * gElapsedTimeForThruster)		
+		else
+			gElapsedTimeForThruster = 0
+			gElapsedTimeDropping = gElapsedTimeDropping + gElapsedTime
+			gSpeed = 400 * gElapsedTimeDropping
+		end
+
+		gPlayer.y = gPlayer.y + (gSpeed * gElapsedTime)
+
+		if gPlayer.y < 0 then
+			gPlayer.y = 0
+		elseif gPlayer.y > (display.contentHeight - gPlayer.images.fighter.image.height) then
+			gPlayer.y = display.contentHeight - gPlayer.images.fighter.image.height
+		end
+	
+		gPlayer.images.fighter.image.x = gPlayer.x
+		gPlayer.images.fighter.image.y = gPlayer.y
+
+	end
+
+	--
+	-- Scroll stars from right to left.
+	--
+	
+    for i = 1, #gStarField do
+
+        -- Move the star.
+		gStarField[i].star.x = gStarField[i].star.x - gStarField[i].speed
+
+        -- If the star falls off the screen's edge, wrap it around
+        if gStarField[i].star.x <= 0 then
+            gStarField[i].star.x = screenW
+        end
+
+    end
+
+	--
+	-- Update explosions.
+	--
+
+	for i = #gExplosions.onscreen, 1,-1 do
+
+		local e = gExplosions.onscreen[i]
+
+		e.animation.x = e.x
+		e.animation.y = e.y
+
+	end
+
+	--
+	-- Update all game sprites.
+	--
+
+	for i,v in ipairs( gSprites.onscreen ) do
+
+		v.update( v, gElapsedTime )
+
+		if v.image then
+			v.image.x = v.x
+			v.image.y = v.y
+		else
+			v.animation.x = v.x
+			v.animation.y = v.y
+		end
+
+	end
+	
+	--
+	-- Update power ups.
+	--
+
+	for i,v in ipairs( gPowerUps.onscreen ) do
+
+		v.x = v.x - 100 * gElapsedTime
+
+		-- Remove out-of-bound power ups.
+		if v.x < 0 then
+			v.active = false
+		end
+		
+		v.image.x = v.x
+		v.image.y = v.y
+
+	end
+
+	--
+	-- Check for collisions between the player's ship and all active sprites.
+	--
+
+	for i,v in ipairs( gSprites.onscreen ) do
+
+		if not gSprites.imageTypes[v.imageTypesIndex].background then
+
+			if spritesCollide( gPlayer.x, gPlayer.y,
+							   gPlayer.images.fighter.width,
+							   gPlayer.images.fighter.height,
+							   gPlayer.images.fighter.collisionMap,
+							   v.x, v.y,
+							   gSprites.imageTypes[v.imageTypesIndex].width,
+							   gSprites.imageTypes[v.imageTypesIndex].height,
+							   gSprites.imageTypes[v.imageTypesIndex].collisionMap ) then
+
+				v.collided = true
+				gPlayer.shields = gPlayer.shields - 5
+
+				print("SHIELDS: " .. gPlayer.shields)
+
+				if gSprites.imageTypes[v.imageTypesIndex].obstacle then
+
+					-- If the player hits an obstacle - do not let it pass
+					-- through but move it back to where it was before.
+					gPlayer.x = prevX
+					gPlayer.y = prevY
+
+					-- Create a small explosion.
+					createExplosion( "explosionLittle",
+									 prevX + (gPlayer.images.fighter.width / 2 ),
+									 prevY + (gPlayer.images.fighter.height / 2 ) )
+
+				end
+
+			end
+
+		end
+
+	end
+
+	--
+	-- Update enemy projectile and check for collisions.
+	--
+
+	for i,v in ipairs( gProjectiles.enemy ) do
+
+		v.x = v.x + v.directionVector.x * (v.speed * gElapsedTime)
+		v.y = v.y + v.directionVector.y * (v.speed * gElapsedTime)
+
+		v.animation.x = v.x
+		v.animation.y = v.y
+
+		-- Check for collisions between the current projectile and the player.
+		if rectsCollide( v.x, v.y,
+						 10, 10,
+						 gPlayer.x, gPlayer.y,
+						 gPlayer.images.fighter.width,
+						 gPlayer.images.fighter.height ) then
+
+			playSound( "hit" )
+			v.active = false -- Kill off enemy projectile.
+			gPlayer.shields = gPlayer.shields - v.damage -- Decrease player shields.
+
+			print("SHIELDS: " .. gPlayer.shields)
+
+			-- Create a small explosion.
+			createExplosion( "explosionLittle", v.x, v.y )
+
+		end
+
+		-- Remove off-screen projectiles.
+		if v.x < 0 or v.x > display.contentWidth or
+		   v.y < 0 or v.y > display.contentHeight then
+			v.active = false
+		end
+
+	end
+
+	--
+	-- Update player projectiles and check for collisions.
+	--
+
+	for i,v in ipairs( gProjectiles.player ) do
+
+		v.x = v.x + v.speed * gElapsedTime
+
+		v.image.x = v.x
+		v.image.y = v.y
+
+		if v.weapon == "missile" then
+
+			--v.exhaust:setPosition( v.x - 7, v.y + 2 )
+			--v.exhaust:update( gElapsedTime )
+
+			-- Update missile speed from slow to a max of 300.
+			if v.speed < 300 then
+				v.speed = v.speed * 1.1 + 1 * gElapsedTime
+			end
+
+		end
+
+		-- Check for collisions between the current projectile
+		-- and all game sprites.
+		for n,c in ipairs( gSprites.onscreen ) do
+
+			if not gSprites.imageTypes[c.imageTypesIndex].background then
+
+				if spritesCollide( v.x, v.y,
+								   gPlayer.images.laser.width,
+								   gPlayer.images.laser.height,
+								   gPlayer.images.laser.collisionMap,
+								   c.x, c.y,
+								   gSprites.imageTypes[c.imageTypesIndex].width,
+								   gSprites.imageTypes[c.imageTypesIndex].height,
+								   gSprites.imageTypes[c.imageTypesIndex].collisionMap ) then
+
+					playSound( "hit" )
+					v.active = false -- Cleanup projectile.
+
+					if not gSprites.imageTypes[c.imageTypesIndex].obstacle then
+						c.shields = c.shields - v.damage -- Decrease enemy shields.
+					end
+
+					-- Create a small explosion at the point of impact.
+					createExplosion( "explosionLittle", v.x, v.y )
+
+				end
+
+			end
+
+		end
+
+		-- Remove out-of-bound projectiles. Once they leave the screen - they're gone!
+		if v.x < 0 or v.x > display.contentWidth or
+		   v.y < 0 or v.y > display.contentHeight then
+			v.active = false
+		end
+	end
+
+	--
+	-- Cleaning up game sprites that need removal such as dead enemies and 
+	-- obstacles that have left the screen.
+	--
+
+	for i = #gSprites.onscreen,1,-1 do
+
+		local t = gSprites.onscreen[i].imageTypesIndex
+
+		if not gSprites.imageTypes[gSprites.onscreen[i].imageTypesIndex].obstacle and
+		   not gSprites.imageTypes[gSprites.onscreen[i].imageTypesIndex].columnMarker and
+		   not gSprites.imageTypes[gSprites.onscreen[i].imageTypesIndex].background then
+
+			if gSprites.onscreen[i].shields <= 0 then
+
+				-- Player blew it up with lasers or missiles!
+
+				gSprites.onscreen[i].destroyedByPlayer = true
+
+				if gSprites.onscreen[i].powerUpType ~= nil then
+					createPowerUp( gSprites.onscreen[i].powerUpType,
+								   gSprites.onscreen[i].x + gSprites.imageTypes[t].width / 2,
+								   gSprites.onscreen[i].y + gSprites.imageTypes[t].height / 2 )
+				end
+
+				createExplosion( "explosionBig",
+								 gSprites.onscreen[i].x + gSprites.imageTypes[t].width / 4,
+								 gSprites.onscreen[i].y + gSprites.imageTypes[t].height / 4 )
+
+				gSprites.onscreen[i].active = false
+
+			elseif gSprites.onscreen[i].collided then
+
+				-- Player rammed it with the his/her ship!
+
+				createExplosion( "explosionBig",
+								 gSprites.onscreen[i].x + gSprites.imageTypes[t].width / 4,
+								 gSprites.onscreen[i].y + gSprites.imageTypes[t].height / 4 )
+
+				gSprites.onscreen[i].active = false
+
+			end
+
+		end
+
+		if gSprites.onscreen[i].x < -(gSprites.imageTypes[t].width) then
+			-- The sprite has left the screen.
+			gSprites.onscreen[i].active = false
+		end
+
+	end
+
+	--
+	-- Check for collisions between the player's ship and all power ups.
+	--
+	
+	for i = #gPowerUps.onscreen, 1, -1 do
+
+		if rectsCollide( gPowerUps.onscreen[i].x, gPowerUps.onscreen[i].y,
+						 gSprites.imageTypes[gPowerUps.onscreen[i].imageTypesIndex].width,
+						 gSprites.imageTypes[gPowerUps.onscreen[i].imageTypesIndex].height,
+						 gPlayer.x, gPlayer.y,
+						 gPlayer.images.fighter.width,
+						 gPlayer.images.fighter.height ) then
+
+			if gPowerUps.onscreen[i].powerUp == "shields" and gPlayer.shields < 100 then
+
+				gPlayer.shields = gPlayer.shields + gPowerUps.shieldBonus
+
+				if gPlayer.shields > 100 then
+				   gPlayer.shields = 100
+				end
+
+				print("SHIELDS: " .. gPlayer.shields)
+
+				playSound( "shieldsActivate" )
+				gPowerUps.onscreen[i].active = false
+
+			elseif gPowerUps.onscreen[i].powerUp == "missiles" and gPlayer.numMissiles < 100 then
+
+				gPlayer.numMissiles = gPlayer.numMissiles + gPowerUps.missilesBonus
+				
+				gPlayer.activeWeapon = "missile"
+				gPlayer.rateOfFire = 300
+
+				if gPlayer.numMissiles > 100 then
+				   gPlayer.numMissiles = 100
+				end
+
+				print("MISSILES: " .. gPlayer.numMissiles)
+
+				playSound( "loadMissiles" )
+				gPowerUps.onscreen[i].active = false
+
+			end
+
+		end
+
+	end
+		
+	--
+    -- Remove all game sprites that have been marked for removal.
+    --
+
+    for i = #gLevelData, 1,-1 do
+        if gLevelData[i].spawned then
+            table.remove( gLevelData, i )
+        end
+    end
+		
+	for i = #gExplosions.onscreen, 1,-1 do
+        if not gExplosions.onscreen[i].active then
+			gExplosions.onscreen[i].animation:removeSelf()
+            table.remove( gExplosions.onscreen, i )
+        end
+    end
+
+    for i = #gProjectiles.player, 1,-1 do
+
+        if not gProjectiles.player[i].active then
+
+			gProjectiles.player[i].image:removeSelf()
+			
+			table.remove( gProjectiles.player, i )
+
+        end
+
+    end
+
+    for i = #gProjectiles.enemy, 1,-1 do
+
+        if not gProjectiles.enemy[i].active then
+		   gProjectiles.enemy[i].animation:removeSelf()
+           table.remove( gProjectiles.enemy, i )
+        end
+
+    end
+			
+	for i = #gSprites.onscreen, 1,-1 do
+        if not gSprites.onscreen[i].active then
+
+            if gSprites.onscreen[i].delete ~= nil then
+                gSprites.onscreen[i].delete( gSprites.onscreen[i], gElapsedTime )
+            end
+
+            if gSprites.imageTypes[gSprites.onscreen[i].imageTypesIndex].animated then
+                gSprites.onscreen[i].animation:removeSelf()
+            else
+				gSprites.onscreen[i].image:removeSelf()
+			end
+
+            table.remove( gSprites.onscreen, i )
+        end
+    end
+
+	for i = #gPowerUps.onscreen, 1, -1 do
+        if not gPowerUps.onscreen[i].active then
+			gPowerUps.onscreen[i].image:removeSelf()
+            table.remove( gPowerUps.onscreen, i )
+        end
+    end
+
+end
+
+--==============================================================================
+-- Function: touchListener( event (table) )
+-- Author:   Kevin Harris
+-- Modified: September 25, 2013
+-- Returns:  
+-- Descript: Receives touch events for the scene.
+--==============================================================================
+local function touchListener( event )
+	
+	--print( "event(" .. event.phase .. ") ("..event.x..","..event.y..")" )
+
+	if event.phase == "began" then
+		gFireThrusters = true
+	elseif event.phase == "ended" then
+		gFireThrusters = false
+	end
+	
+end
+
+-----------------------------------------------------------------------------------------
+-- END OF YOUR IMPLEMENTATION
+-----------------------------------------------------------------------------------------
+
+-- Event listeners for scene life-cycle events.
+scene:addEventListener( "create", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
+
+Runtime:addEventListener( "touch", touchListener )
+
+-----------------------------------------------------------------------------------------
+
+return scene

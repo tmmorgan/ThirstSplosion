@@ -1,0 +1,96 @@
+#------------------------------------------------------------------------------
+# Anime Robots Attack! level file.
+# Created: 04/15/2015 00:00:00
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Sprites are defined for use on the level's map. Once a sprite has been defined
+# and placed on the map via its mapId, the game will spawn it when that part of
+# the map section is encountered. The level's map and its sections are defined 
+# later after the BEGIN_LEVEL_MAP keyword which can be found below.
+#------------------------------------------------------------------------------
+
+BEGIN_SPRITE
+mapId = 1
+imageType = levelBrick
+
+BEGIN_SPRITE
+mapId = 2
+imageType = energyBrick
+shields = 2
+points = 10
+
+BEGIN_SPRITE
+mapId = 3
+imageType = energyBrick
+shields = 2
+points = 10
+powerUpType = missiles
+
+BEGIN_SPRITE
+mapId = 4
+imageType = goldBrick
+shields = 10
+deleteFunction = deletePlus500
+
+BEGIN_SPRITE
+mapId = A
+imageType = enemy1
+shields = 5
+points = 10
+speed = 150
+
+BEGIN_SPRITE
+mapId = B
+imageType = enemy1
+shields = 5
+points = 10
+speed = 150
+updateFunction = updateSeekUntilPassed
+
+BEGIN_SPRITE
+mapId = C
+imageType = enemy2
+shields = 15
+points = 100
+speed = 75
+powerUpType = missiles
+updateFunction = updateBlocking
+
+BEGIN_SPRITE
+mapId = D
+imageType = enemy3
+shields = 30
+points = 150
+speed = 25
+rateOfFire = 2
+powerUpType = shields
+updateFunction = updateBlockingAndFiring
+
+#------------------------------------------------------------------------------
+# Setting the BEGIN_LEVEL_MAP keyword means, we're done specifying sprites and
+# we're ready to use the map Ids of our sprites to layout the level's map.
+#
+# Sprites that are used to define level structure or obstacles are 64x64 pixels
+# square. Since our game screen is 1024x768 a single screen of play is composed
+# of 16x12 of these 64x64 squares.
+#
+# For timing purposes each column is 1 second into the level.
+#------------------------------------------------------------------------------
+
+BEGIN_LEVEL_MAP
+
+BEGIN_MAP_SECTION
+11111111111111111111111111111111~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~1~~~~~~~~~2222~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A~~~C~1~~~~B~~~~2222~~~~D~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~1~~~~~~~~~2222~~~~~~~~~~~~~~~~~~~~444~~~~444~~~~444~~~~~~
+~~D~~~~~~~~~~B~~2223~~~~~~~~~~~~~~~~~~~4~~~4~~4~~~4~~4~~~4~~~~~
+A~~~C~~~~~~~~~~~2222~D~~~~~~~~~~D~~~~~~4~~~~~~~~~4~~~~~~4~~~~~~
+~~~~~~~~~~~~~~~~2223~~~~~~~~~~~~~~~~~~~4~~~~~~~~4~~~~~~~4~~~~~~
+~~B~~~~~~~~~~B~~2222~~~~~~~~~~~~~~~~~~~4~~~4~~~4~~~~~4~~~4~~~~~
+A~~~C~1~~~~~~~~~2222~~~~~~~~~~~~~~~~~~~~444~~~44444~~~444~~~~~~
+~~~~~~1~~~~B~~~~2222~~~~~~~D~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~1~~~~~~~~~2222~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+11111111111111111111111111111111~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

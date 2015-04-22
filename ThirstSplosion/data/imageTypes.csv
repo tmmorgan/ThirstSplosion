@@ -1,0 +1,14 @@
+imageType,imageFile,width,height,useCollisionMap,obstacle,background,weaponOffsetX,weaponOffsetY,animated,animationDuration,numFrames,animationMode
+columnMarker,columnMarker.png,64,64,FALSE,FALSE,TRUE,0,0,FALSE,0,0,NA
+levelBrick,levelBrick.png,64,64,FALSE,TRUE,FALSE,0,0,FALSE,0,0,NA
+energyBrick,energyBrick.png,64,64,FALSE,FALSE,FALSE,0,0,FALSE,0,0,NA
+goldBrick,goldBrick.png,64,64,FALSE,FALSE,FALSE,0,0,TRUE,1000,5,bounce_forever
+enemy1,enemy1.png,67,95,FALSE,FALSE,FALSE,0,0,FALSE,0,0,NA
+enemy2,enemy2.png,114,150,FALSE,FALSE,FALSE,0,0,FALSE,0,0,NA
+enemy3,enemy3.png,164,200,TRUE,FALSE,FALSE,10,70,FALSE,0,0,NA
+explosionLittle,explosionLittle.png,20,20,FALSE,FALSE,FALSE,0,0,TRUE,500,7,once
+explosionBig,explosionBig.png,64,64,FALSE,FALSE,FALSE,0,0,TRUE,500,25,once
+plasmaShot,plasmaShot.png,10,10,FALSE,FALSE,FALSE,0,0,TRUE,1000,5,bounce_forever
+plus500,plus500.png,80,20,FALSE,FALSE,TRUE,0,0,FALSE,0,0,NA
+shields,shields.png,29,32,FALSE,FALSE,FALSE,0,0,FALSE,0,0,NA
+missiles,missiles.png,29,32,FALSE,FALSE,FALSE,0,0,FALSE,0,0,NA
