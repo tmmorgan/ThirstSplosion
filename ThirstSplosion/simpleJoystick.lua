@@ -5,17 +5,17 @@
 
 local Joystick = {}
 
-function Joystick.new( innerRadius, outerRadius )
+function Joystick.new( innerRadius, outerRadius, xOffset, yOffset )
     local stage = display.getCurrentStage()
     
     local joyGroup = display.newGroup()
-    
-    local bgJoystick = display.newCircle( joyGroup, 0,0, outerRadius )
+
+    local bgJoystick = display.newCircle( joyGroup, xOffset, yOffset, outerRadius )
     bgJoystick:setFillColor( .2,.2,.2 )
     
     local radToDeg = 180/math.pi
     local degToRad = math.pi/180
-    local joystick = display.newCircle( joyGroup, 0,0, innerRadius )
+    local joystick = display.newCircle( joyGroup, xOffset, yOffset, innerRadius )
     joystick:setFillColor( .8,.8,.8 )
 
     -- for easy reference later:
@@ -36,6 +36,9 @@ function Joystick.new( innerRadius, outerRadius )
     end
     function joyGroup:getDistance()
     	return distance/stopRadius
+    end
+    function joyGroup:putToFront()
+        joyGroup:toFront()
     end
     
     function joystick:touch(event)
@@ -70,16 +73,16 @@ function Joystick.new( innerRadius, outerRadius )
             if( distance >= stopRadius ) then
                 distance = stopRadius
                 local radAngle = angle*degToRad
-                self.x = distance*math.cos(radAngle)
-                self.y = -distance*math.sin(radAngle)
+                self.x = distance*math.cos(radAngle) + xOffset
+                self.y = -distance*math.sin(radAngle) + yOffset
             else
-                self.x = posX
-                self.y = posY
+                self.x = posX + xOffset
+                self.y = posY + yOffset
             end
             
         else
-            self.x = 0
-			self.y = 0
+            self.x = xOffset
+			self.y = yOffset
             stage:setFocus(nil, event.id)
             
             directionId = 0

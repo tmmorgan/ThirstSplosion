@@ -13,3 +13,4 @@ audio.setVolume( 0.1 )
 
 -- Load menu scene!
 composer.gotoScene( "menu" )
+

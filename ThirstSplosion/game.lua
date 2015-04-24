@@ -53,6 +53,27 @@ function scene:create( event )
 	gImageSheets = {}
 	gSequenceData = {}
 
+	local jslib = require( "simpleJoystick" )
+
+	js = jslib.new( 50, 100 , -550, 250)
+	js.x = display.contentWidth/2
+	js.y = display.contentHeight/2
+--
+	function catchTimer( e )
+		print( "  joystick info: "
+			.. " dir=" .. js:getDirection()
+			.. " angle=" .. js:getAngle()
+			.. " dist="..js:getDistance() )
+		return true
+	end
+
+
+	--
+	js:activate()
+	timer.performWithDelay( 500, catchTimer, -1 )
+	js:putToFront()
+
+
 	gBackgroundImage = display.newImageRect( "images/space.png", display.contentWidth, display.contentHeight )
 	gBackgroundImage.anchorX = 0
 	gBackgroundImage.anchorY = 0
@@ -98,7 +119,7 @@ function scene:create( event )
 		numMissiles = 0,
 		activeWeapon = "laser",
 		rateOfFire = 150,
-		speed = 100,
+		speed = 0,
 		active = true
 	}
 
@@ -179,6 +200,7 @@ function scene:create( event )
 
     end
 
+    --Displays the black bars
    	gLeftBorder = display.newRect(-500,0,500, display.contentHeight)
 	gLeftBorder.anchorX = 0
 	gLeftBorder.anchorY = 0
@@ -296,6 +318,7 @@ function update( event )
 
 			createSprite( v ) -- Based on the level data, spawn a sprite!
 			v.spawned = true  -- Mark the level data entry for removal.
+			js.putToFront()
 
 		else
 
