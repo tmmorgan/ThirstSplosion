@@ -28,6 +28,9 @@ function Joystick.new( innerRadius, outerRadius, xOffset, yOffset )
     local directionId = 0
     local angle = 0
     local distance = 0
+    local xCoord = 0
+    local yCoord = 0
+
     function joyGroup.getDirection()
     	return directionId
     end
@@ -40,6 +43,12 @@ function Joystick.new( innerRadius, outerRadius, xOffset, yOffset )
     function joyGroup:putToFront()
         joyGroup:toFront()
     end
+    function joyGroup:getXCoord()
+        return xCoord
+    end
+    function joyGroup:getYCoord()
+        return yCoord
+    end
     
     function joystick:touch(event)
         local phase = event.phase
@@ -50,6 +59,14 @@ function Joystick.new( innerRadius, outerRadius, xOffset, yOffset )
             local parent = self.parent
             local posX, posY = parent:contentToLocal(event.x, event.y)
             angle = (math.atan2( posX - xOffset, posY  - yOffset)*radToDeg)-90
+
+            local xVector = posX - xOffset
+            local yVector = posY - yOffset
+            local vectorSum = math.sqrt(math.pow(xVector, 2) + math.pow(yVector, 2))
+            xCoord = xVector / vectorSum
+            yCoord = yVector / vectorSum
+
+
             if( angle < 0 ) then
             	angle = 360 + angle
             end
