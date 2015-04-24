@@ -49,7 +49,7 @@ function Joystick.new( innerRadius, outerRadius, xOffset, yOffset )
             end
             local parent = self.parent
             local posX, posY = parent:contentToLocal(event.x, event.y)
-            angle = (math.atan2( posX, posY )*radToDeg)-90
+            angle = (math.atan2( posX - xOffset, posY  - yOffset)*radToDeg)-90
             if( angle < 0 ) then
             	angle = 360 + angle
             end
