@@ -1,7 +1,7 @@
 --==============================================================================
 -- File:     menu.lua
--- Author:   Kevin Harriss
--- Modified: April 27, 2015
+-- Author:   Kevin Harris
+-- Modified: April 15, 2015
 -- Descript: 
 --==============================================================================
 
@@ -34,7 +34,7 @@ end
 --==============================================================================
 -- Function: scene:create( event (table) )
 -- Author:   Kevin Harris
--- Modified: April 27, 2015
+-- Modified: April 15, 2015
 -- Returns:  
 -- Descript: Called when the scene's view does not exist.
 --==============================================================================
@@ -81,13 +81,6 @@ function scene:create( event )
 	rightBorder.anchorX = 0
 	rightBorder.anchorY = 0
 	rightBorder:setFillColor(0,0,0,255)
-
-	sceneGroup:insert(background)
-	sceneGroup:insert(robot)
-	sceneGroup:insert(titleLogo)
-	sceneGroup:insert(playBtn)
-	sceneGroup:insert(leftBorder)
-	sceneGroup:insert(rightBorder)
 
 end
 

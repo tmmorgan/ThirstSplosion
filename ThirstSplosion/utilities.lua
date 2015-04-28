@@ -1,7 +1,7 @@
 --==============================================================================
 -- File:     utilities.lua
 -- Author:   Kevin Harris
--- Modified: April 27, 2015
+-- Modified: April 15, 2015
 -- Descript: A collection of misc game functions.
 --==============================================================================
 
@@ -95,7 +95,7 @@ end
 --==============================================================================
 -- Function: createSprite( spriteData (table) )
 -- Author:   Kevin Harris
--- Modified: April 27, 2015
+-- Modified: April 15, 2015
 -- Returns:  Nothing
 -- Descript: Using a table of sprite data, create an active sprite.
 --==============================================================================
@@ -153,6 +153,7 @@ function createSprite( spriteData )
         newSprite.animation.anchorY = 0
 		newSprite.animation.x = newSprite.x
 		newSprite.animation.y = newSprite.y
+
 		newSprite.animation:play()
 
         local function spriteEventListener( event )
@@ -163,8 +164,6 @@ function createSprite( spriteData )
         end
 
        newSprite.animation:addEventListener( "sprite", spriteEventListener )
-
-        gSpriteGroup:insert(newSprite.animation)
 
 	else
 		
@@ -180,8 +179,6 @@ function createSprite( spriteData )
 		if newSprite.imageType == "columnMarker" and SHOW_COLUMN_MARKERS == false then
 			newSprite.image.isVisible = false
 		end
-
-        gSpriteGroup:insert(newSprite.image)
 		
 	end
 		
@@ -216,6 +213,11 @@ function createSprite( spriteData )
 
 	table.insert( gSprites.onscreen, newSprite )
 
+    -- Everytime we add new sprites, we'll need to move our borders back up
+    -- in the Z order or the newly created sprites will render on top of them.
+    gLeftBorder:toFront()
+    gRightBorder:toFront()
+	
 end
 
 --==============================================================================
@@ -223,7 +225,7 @@ end
 --                            x (number),
 --                            y (number) )
 -- Author:   Kevin Harris
--- Modified: April 27, 2015
+-- Modified: December 17, 2014
 -- Returns:  Nothing
 -- Descript:
 --==============================================================================
@@ -250,9 +252,8 @@ function createExplosion( imageType, x, y )
 	animation.x = x
 	animation.y = y
 	animation:play()
-
-    gSpriteGroup:insert(animation)
 	
+
     local explosion =
     {
         animation = animation,
@@ -281,7 +282,7 @@ end
 --                          x (number),
 --                          y (number) )
 -- Author:   Kevin Harris
--- Modified: April 27, 2015
+-- Modified: September 25, 2013
 -- Returns:  Nothing
 -- Descript: Creates a power up.
 --==============================================================================
@@ -316,8 +317,6 @@ function createPowerUp( powerUpType, x, y )
 	powerUp.image.x = powerUp.x
 	powerUp.image.y = powerUp.y
 	
-    gSpriteGroup:insert(powerUp.image)
-
     table.insert( gPowerUps.onscreen, powerUp )
 
 end
@@ -326,7 +325,7 @@ end
 -- Function: fireEnemyProjectile( x (number),
 --                                y (number) )
 -- Author:   Kevin Harris
--- Modified: April 27, 2015
+-- Modified: December 17, 2014
 -- Returns:  Nothing
 -- Descript:
 --==============================================================================
@@ -378,8 +377,6 @@ function fireEnemyProjectile( imageType, x, y )
     -- Normalize the direction vector to unit length.
     projectile.directionVector = normalizeVector( projectile.directionVector )
 
-    gSpriteGroup:insert(animation)
-
     table.insert( gProjectiles.enemy, projectile )
 
     playSound( "plasma" )
@@ -389,7 +386,7 @@ end
 --==============================================================================
 -- Function: firePlayerProjectile( weaponType (string) )
 -- Author:   Kevin Harris
--- Modified: April 27, 2015
+-- Modified: September 25, 2013
 -- Returns:  Nothing
 -- Descript: Fires a player projectile from the player's fighter position plus
 --           some offset.
@@ -452,8 +449,6 @@ function firePlayerProjectile( weaponType )
 	
 	projectile.image.x = projectile.x
 	projectile.image.y = projectile.y
-
-    gSpriteGroup:insert(projectile.image)
 	
     table.insert( gProjectiles.player, projectile )
 end
