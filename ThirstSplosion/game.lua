@@ -31,7 +31,7 @@ local prevY = 0
 --==============================================================================
 -- Function: scene:create( event (table) )
 -- Author:   Kevin Harris
--- Modified: April 15, 2015
+-- Modified: April 27, 2015
 -- Returns:  
 -- Descript: Called when the scene's view does not exist.
 --==============================================================================
@@ -55,17 +55,17 @@ function scene:create( event )
 
 	local jslib = require( "simpleJoystick" )
 
-	js = jslib.new( 50, 100 , -550, 250)
-	js.x = display.contentWidth/2
-	js.y = display.contentHeight/2
---
-	function catchTimer( e )
-		print( "  joystick info: "
-			.. " dir=" .. js:getDirection()
-			.. " angle=" .. js:getAngle()
-			.. " dist="..js:getDistance() )
-		return true
-	end
+		js = jslib.new( 50, 100 , -550, 250)
+		js.x = display.contentWidth/2
+		js.y = display.contentHeight/2
+	--
+		function catchTimer( e )
+			print( "  joystick info: "
+				.. " dir=" .. js:getDirection()
+				.. " angle=" .. js:getAngle()
+				.. " dist="..js:getDistance() )
+			return true
+		end
 
 
 	--
@@ -73,11 +73,10 @@ function scene:create( event )
 	timer.performWithDelay( 500, catchTimer, -1 )
 	js:putToFront()
 
-
-	gBackgroundImage = display.newImageRect( "images/space.png", display.contentWidth, display.contentHeight )
-	gBackgroundImage.anchorX = 0
-	gBackgroundImage.anchorY = 0
-	gBackgroundImage.x, gBackgroundImage.y = 0, 0
+	local backgroundImage = display.newImageRect( "images/space.png", display.contentWidth, display.contentHeight )
+	backgroundImage.anchorX = 0
+	backgroundImage.anchorY = 0
+	backgroundImage.x, backgroundImage.y = 0, 0
 
 	--
 	-- Player...
@@ -92,7 +91,7 @@ function scene:create( event )
 				image = display.newImageRect( "images/fighter.png", 137, 36 ),
 				width = 137,
 				height = 36
-				-- TODO: Can Corona build a collision map?
+-- TODO: Can Corona build a collision map?
 				--collisionMap = newCollisionMap( "Images/Player/fighter.png" )
 			},
 
@@ -119,7 +118,7 @@ function scene:create( event )
 		numMissiles = 0,
 		activeWeapon = "laser",
 		rateOfFire = 150,
-		speed = 0,
+		speed = 100,
 		active = true
 	}
 
@@ -186,6 +185,8 @@ function scene:create( event )
 
     gStarField = {}
 
+	local starGroup = display.newGroup()
+
     for i = 1, 50 do
 
 		local speed = math.random( 1, 3 )
@@ -198,18 +199,28 @@ function scene:create( event )
 
 		gStarField[i].star:setFillColor( 255, 255, 255 )
 
+		starGroup:insert( gStarField[i].star )
+
     end
 
-    --Displays the black bars
-   	gLeftBorder = display.newRect(-500,0,500, display.contentHeight)
-	gLeftBorder.anchorX = 0
-	gLeftBorder.anchorY = 0
-	gLeftBorder:setFillColor(0,0,0,255)
+   	local leftBorder = display.newRect(-500,0,500, display.contentHeight)
+	leftBorder.anchorX = 0
+	leftBorder.anchorY = 0
+	leftBorder:setFillColor(0,0,0,255)
 
-	gRightBorder = display.newRect(display.contentWidth,0,500,display.contentHeight)
-	gRightBorder.anchorX = 0
-	gRightBorder.anchorY = 0
-	gRightBorder:setFillColor(0,0,0,255)
+	local rightBorder = display.newRect(display.contentWidth,0,500,display.contentHeight)
+	rightBorder.anchorX = 0
+	rightBorder.anchorY = 0
+	rightBorder:setFillColor(0,0,0,255)
+
+	gSpriteGroup = display.newGroup()
+
+	sceneGroup:insert(backgroundImage)
+	sceneGroup:insert(starGroup)
+	sceneGroup:insert(gPlayer.images.fighter.image)
+	sceneGroup:insert(gSpriteGroup)
+	sceneGroup:insert(leftBorder)
+	sceneGroup:insert(rightBorder)
 
 end
 
