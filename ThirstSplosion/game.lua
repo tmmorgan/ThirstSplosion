@@ -92,7 +92,7 @@ function scene:create( event )
 				image = display.newImageRect( "images/fighter.png", 137, 36 ),
 				width = 137,
 				height = 36
--- TODO: Can Corona build a collision map?
+				-- TODO: Can Corona build a collision map?
 				--collisionMap = newCollisionMap( "Images/Player/fighter.png" )
 			},
 
@@ -368,7 +368,8 @@ function update( event )
 		
 		-- Fire like there's no tomorrow!
 		firePlayerProjectile( gPlayer.activeWeapon )
-			
+		
+		--[[	
 		if gFireThrusters then
 			gElapsedTimeDropping = 0
 			gElapsedTimeForThruster = gElapsedTimeForThruster + gElapsedTime
@@ -378,14 +379,49 @@ function update( event )
 			gElapsedTimeDropping = gElapsedTimeDropping + gElapsedTime
 			gSpeed = 400 * gElapsedTimeDropping
 		end
+		]]--
 
-		gPlayer.y = gPlayer.y + (gSpeed * gElapsedTime)
+		gSpeed = 300
+
+		--gPlayer.y = gPlayer.y + (gSpeed * gElapsedTime)
+		--[[
+		gPlayer.y = gPlayer.y + gSpeed*gElapsedTime*math.cos(js:getAngle())
+		gPlayer.x = gPlayer.x + gSpeed*gElapsedTime*math.sin(js:getAngle())
+		print("sin" .. gPlayer.y + gSpeed*gElapsedTime*math.cos(js:getAngle()))
+		print("cos" .. gPlayer.x + gSpeed*gElapsedTime*math.sin(js:getAngle()))
+		print("ang" .. js:getAngle())
+		]]--
+		--[[
+		if js:getAngle() > 315 or js:getAngle() <= 45 then
+			gPlayer.x = gPlayer.x + gSpeed*gElapsedTime
+			gPlayer.y = gPlayer.y
+		elseif js:getAngle() > 45 and js:getAngle() <= 135 then
+			gPlayer.x = gPlayer.x
+			gPlayer.y = gPlayer.y - gSpeed*gElapsedTime
+		elseif js:getAngle() > 135 and js:getAngle() <= 225 then
+			gPlayer.x = gPlayer.x - gSpeed*gElapsedTime
+			gPlayer.y = gPlayer.y 
+		elseif js:getAngle() > 225 and js:getAngle() <= 315 then
+			gPlayer.x = gPlayer.x
+			gPlayer.y = gPlayer.y + gSpeed*gElapsedTime
+		end
+		]]--
+
+		gPlayer.x = gPlayer.x + gSpeed * gElapsedTime * js:getXCoord()
+		gPlayer.y = gPlayer.y + gSpeed * gElapsedTime * js:getYCoord()
 
 		if gPlayer.y < 0 then
 			gPlayer.y = 0
 		elseif gPlayer.y > (display.contentHeight - gPlayer.images.fighter.image.height) then
 			gPlayer.y = display.contentHeight - gPlayer.images.fighter.image.height
 		end
+
+		if gPlayer.x < 0 then
+			gPlayer.x = 0
+		elseif gPlayer.x > (display.contentWidth - gPlayer.images.fighter.image.height) then
+			gPlayer.x = (display.contentWidth - gPlayer.images.fighter.image.height)
+		end
+
 	
 		gPlayer.images.fighter.image.x = gPlayer.x
 		gPlayer.images.fighter.image.y = gPlayer.y
@@ -772,12 +808,14 @@ end
 local function touchListener( event )
 	
 	--print( "event(" .. event.phase .. ") ("..event.x..","..event.y..")" )
-
+	--[[
 	if event.phase == "began" then
 		gFireThrusters = true
 	elseif event.phase == "ended" then
 		gFireThrusters = false
 	end
+	]]
+	gFireThrusters = true
 	
 end
 
