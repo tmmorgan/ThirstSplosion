@@ -186,6 +186,8 @@ function scene:create( event )
 
     gStarField = {}
 
+	local starGroup = display.newGroup()
+
     for i = 1, 50 do
 
 		local speed = math.random( 1, 3 )
@@ -198,18 +200,28 @@ function scene:create( event )
 
 		gStarField[i].star:setFillColor( 255, 255, 255 )
 
+		starGroup:insert( gStarField[i].star )
+
     end
 
-    --Displays the black bars
-   	gLeftBorder = display.newRect(-500,0,500, display.contentHeight)
-	gLeftBorder.anchorX = 0
-	gLeftBorder.anchorY = 0
-	gLeftBorder:setFillColor(0,0,0,255)
+   	local leftBorder = display.newRect(-500,0,500, display.contentHeight)
+	leftBorder.anchorX = 0
+	leftBorder.anchorY = 0
+	leftBorder:setFillColor(0,0,0,255)
 
-	gRightBorder = display.newRect(display.contentWidth,0,500,display.contentHeight)
-	gRightBorder.anchorX = 0
-	gRightBorder.anchorY = 0
-	gRightBorder:setFillColor(0,0,0,255)
+	local rightBorder = display.newRect(display.contentWidth,0,500,display.contentHeight)
+	rightBorder.anchorX = 0
+	rightBorder.anchorY = 0
+	rightBorder:setFillColor(0,0,0,255)
+
+	gSpriteGroup = display.newGroup()
+
+	sceneGroup:insert(backgroundImage)
+	sceneGroup:insert(starGroup)
+	sceneGroup:insert(gPlayer.images.fighter.image)
+	sceneGroup:insert(gSpriteGroup)
+	sceneGroup:insert(leftBorder)
+	sceneGroup:insert(rightBorder)
 
 end
 
