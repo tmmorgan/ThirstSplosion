@@ -60,11 +60,13 @@ function scene:create( event )
 		js.y = display.contentHeight/2
 	--
 		function catchTimer( e )
+			--[[
 			print( "  joystick info: "
 				.. " dir=" .. js:getDirection()
 				.. " angle=" .. js:getAngle()
 				.. " dist="..js:getDistance() )
 			return true
+			]]--
 		end
 
 
@@ -107,7 +109,14 @@ function scene:create( event )
 				width = 19,
 				height = 3
 				--collisionMap = newCollisionMap( "Images/Player/missile.png" )
+			},
+
+			bomb = 
+			{
+				width = 500,
+				height = 500
 			}
+		
 		},
 
 		x = 100,
@@ -160,6 +169,11 @@ function scene:create( event )
 	{
 		player = {},
 		enemy = {}
+	}
+
+	gBombs = 
+	{
+		timeToDie = {},
 	}
 
 	--
@@ -366,7 +380,9 @@ function update( event )
 		end
 		
 		-- Fire like there's no tomorrow!
-		firePlayerProjectile( gPlayer.activeWeapon )
+		--firePlayerProjectile( gPlayer.activeWeapon )
+		firePlayerProjectile("bomb")
+		fireBomb()
 		
 		--[[	
 		if gFireThrusters then
@@ -454,6 +470,32 @@ function update( event )
 		e.animation.x = e.x
 		e.animation.y = e.y
 
+	end
+
+	--
+	-- Update bombs.
+	--
+
+	for i = #gBombs.onscreen, 1, -1 do
+		local e = gBombs.onscreen[i]
+
+		if gBombs.onscreen[i].timeToDie >= gElapsedTime then
+			--Explode, deal damage to all sprites in range
+			if not gSprites.imageTypes[c.imageTypesIndex].background then
+				for i,v in ipairs(gSprites.onscreen) do
+					if rectsCollide(e.x, e.y,
+						gPlayer.image.bomb.width,
+						gPlayer.image.bomb.height,
+						v.x, v.y,
+						gSprites.imageTypes[v.imageTypesIndex].width,
+						gSprites.imageTypes[v.imageTypesIndex].height) then
+						if not gSprites.imageTypes[c.imageTypesIndex].background then
+							v.shields = v.shields - 100
+						end
+					end
+				end
+			end
+		end
 	end
 
 	--
@@ -572,6 +614,7 @@ function update( event )
 
 	end
 
+
 	--
 	-- Update player projectiles and check for collisions.
 	--
@@ -601,6 +644,7 @@ function update( event )
 
 			if not gSprites.imageTypes[c.imageTypesIndex].background then
 
+				
 				if spritesCollide( v.x, v.y,
 								   gPlayer.images.laser.width,
 								   gPlayer.images.laser.height,
@@ -611,7 +655,7 @@ function update( event )
 								   gSprites.imageTypes[c.imageTypesIndex].collisionMap ) then
 
 					playSound( "hit" )
-					v.active = false -- Cleanup projectile.
+					--v.active = false -- Cleanup projectile.
 
 					if not gSprites.imageTypes[c.imageTypesIndex].obstacle then
 						c.shields = c.shields - v.damage -- Decrease enemy shields.
@@ -621,6 +665,67 @@ function update( event )
 					createExplosion( "explosionLittle", v.x, v.y )
 
 				end
+				
+				--[[
+				local explosionWidth = 5000
+				local explosionHeight = 5000
+
+				
+				if rectsCollide( v.x - bombWidth / 2, v.y - bombHeight / 2,
+								   bombWidth,
+								   bombHeight,
+								   c.x, c.y,
+								   gSprites.imageTypes[c.imageTypesIndex].width,
+								   gSprites.imageTypes[c.imageTypesIndex].height) then
+				
+
+				if spritesCollide( v.x - gPlayer.images.bomb.width,
+								   v.y - gPlayer.images.bomb.height,
+								   gPlayer.images.bomb.width,
+								   gPlayer.images.bomb.height,
+								   gPlayer.images.bomb.collisionMap,
+								   c.x, c.y,
+								   gSprites.imageTypes[c.imageTypesIndex].width,
+								   gSprites.imageTypes[c.imageTypesIndex].height,
+								   gSprites.imageTypes[c.imageTypesIndex].collisionMap ) then
+					print("Bomb Triggered")
+
+					--Check to see which enemies were hit by the explosion
+					for m, d in ipairs(gSprites.onscreen) do
+						if not gSprites.imageTypes[d.imageTypesIndex].background then
+							--print("Non background asset")
+							--For all non background sprites check collision with the explosion
+							if rectsCollide( v.x , v.y,
+								   explosionWidth,
+								   explosionHeight,
+								   d.x, d.y,
+								   gSprites.imageTypes[d.imageTypesIndex].width,
+								   gSprites.imageTypes[d.imageTypesIndex].height) then
+									print("Collision!")
+								if not gSprites.imageTypes[d.imageTypesIndex].obstacle then
+									d.shields = d.shields - v.damage
+									print("Dealt Damage at ")
+								end
+							end
+						end
+					end
+
+					playSound( "hit" )
+					v.active = false -- Cleanup projectile.
+
+					
+
+					if not gSprites.imageTypes[c.imageTypesIndex].obstacle then
+						c.shields = c.shields - v.damage -- Decrease enemy shields.
+					end
+
+					
+
+					-- Create a small explosion at the point of impact.
+					createExplosion( "explosionLittle", v.x, v.y )
+
+				end
+				]]--
 
 			end
 
@@ -750,6 +855,11 @@ function update( event )
         end
     end
 
+    for i = #gBombs.onscreen, 1, -1 do
+    	if not gBombs.onscreen[i].active then
+    		gBombs.onscreen[i].animation:removeSelf()
+    		table.remove(gBombs.onscreen, i)
+
     for i = #gProjectiles.player, 1,-1 do
 
         if not gProjectiles.player[i].active then
@@ -814,7 +924,8 @@ local function touchListener( event )
 		gFireThrusters = false
 	end
 	]]
-	gFireThrusters = true
+	--gFireThrusters = true
+	firePlayerProjectile("bomb")
 	
 end
 

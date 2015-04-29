@@ -12,3 +12,4 @@ plasmaShot,plasmaShot.png,10,10,FALSE,FALSE,FALSE,0,0,TRUE,1000,5,bounce_forever
 plus500,plus500.png,80,20,FALSE,FALSE,TRUE,0,0,FALSE,0,0,NA
 shields,shields.png,29,32,FALSE,FALSE,FALSE,0,0,FALSE,0,0,NA
 missiles,missiles.png,29,32,FALSE,FALSE,FALSE,0,0,FALSE,0,0,NA
+explosionVeryBig,explosionVeryBig.png,128,128,FALSE,FALSE,FALSE,0,0,TRUE,500,25,once

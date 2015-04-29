@@ -218,5 +218,21 @@ gImageTypesTable =
         background = false,
         animated = false,
         obstacle = false,
+    },
+
+    {
+        numFrames = 25,
+        weaponOffsetY = 0,
+        weaponOffsetX = 0,
+        imageFile = "explosionVeryBig.png",
+        width = 128,
+        animationMode = "once",
+        useCollisionMap = "FALSE",
+        imageType = "explosionVeryBig",
+        animationDuration = 500,
+        height = 128,
+        background = false,
+        animated = true,
+        obstacle = false,
     }
 }
