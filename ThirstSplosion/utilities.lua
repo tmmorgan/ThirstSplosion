@@ -483,13 +483,13 @@ function fireBomb()
 
     local bomb =
     {
-        timeToDie = currentTime + 2,
+        timeToDie = currentTime + 1000,
         x = gPlayer.x + gPlayer.images.fighter.width,
         y = gPlayer.y,
         active = true,
         addedToDisplay = false
     }
-
+    print("Time to die: " .. bomb.timeToDie)
     bomb.damage = 100
     bomb.image = display.newImage("images/shields.png")
 

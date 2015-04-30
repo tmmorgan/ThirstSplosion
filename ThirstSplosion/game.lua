@@ -126,7 +126,7 @@ function scene:create( event )
 		state = "normal",
 		numMissiles = 0,
 		activeWeapon = "laser",
-		rateOfFire = 150,
+		rateOfFire = 600,
 		speed = 100,
 		active = true
 	}
@@ -477,13 +477,14 @@ function update( event )
 	--
 	-- Update bombs.
 	--
+	print("Elapsed Time: " .. gElapsedTime)
 
 	for i = #gBombs.onscreen, 1, -1 do
 		local e = gBombs.onscreen[i]
-		print("Time to die:" .. e.timeToDie)
-		if e.timeToDie >= gElapsedTime then
+		if e.timeToDie <= system.getTimer() then
 			--Explode, deal damage to all sprites in range
-			
+			e.active = false
+			createExplosion( "explosionBig", e.x, e.y)
 			for i,v in ipairs(gSprites.onscreen) do
 				if not gSprites.imageTypes[v.imageTypesIndex].background then
 					if rectsCollide(e.x, e.y,
@@ -498,6 +499,8 @@ function update( event )
 					end
 				end
 			end
+
+
 		end
 	end
 
@@ -859,12 +862,14 @@ function update( event )
         end
     end
 
+    
     for i = #gBombs.onscreen, 1, -1 do
     	if not gBombs.onscreen[i].active then
-    		gBombs.onscreen[i].animation:removeSelf()
+    		gBombs.onscreen[i].image:removeSelf()
     		table.remove(gBombs.onscreen, i)
     	end
     end
+
 
     for i = #gProjectiles.player, 1,-1 do
 
