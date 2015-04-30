@@ -113,8 +113,8 @@ function scene:create( event )
 
 			bomb = 
 			{
-				width = 500,
-				height = 500
+				width = 50,
+				height = 50
 			}
 		
 		},
@@ -173,7 +173,7 @@ function scene:create( event )
 
 	gBombs = 
 	{
-		timeToDie = {},
+		onscreen = {}
 	}
 
 	--
@@ -381,9 +381,10 @@ function update( event )
 		
 		-- Fire like there's no tomorrow!
 		--firePlayerProjectile( gPlayer.activeWeapon )
-		firePlayerProjectile("bomb")
+		--firePlayerProjectile("bomb")
 		fireBomb()
 		
+		--Old player movement
 		--[[	
 		if gFireThrusters then
 			gElapsedTimeDropping = 0
@@ -398,6 +399,7 @@ function update( event )
 
 		gSpeed = 300
 
+		--Nonfunctional player movement code based on joystick
 		--gPlayer.y = gPlayer.y + (gSpeed * gElapsedTime)
 		--[[
 		gPlayer.y = gPlayer.y + gSpeed*gElapsedTime*math.cos(js:getAngle())
@@ -478,18 +480,19 @@ function update( event )
 
 	for i = #gBombs.onscreen, 1, -1 do
 		local e = gBombs.onscreen[i]
-
-		if gBombs.onscreen[i].timeToDie >= gElapsedTime then
+		print("Time to die:" .. e.timeToDie)
+		if e.timeToDie >= gElapsedTime then
 			--Explode, deal damage to all sprites in range
-			if not gSprites.imageTypes[c.imageTypesIndex].background then
-				for i,v in ipairs(gSprites.onscreen) do
+			
+			for i,v in ipairs(gSprites.onscreen) do
+				if not gSprites.imageTypes[v.imageTypesIndex].background then
 					if rectsCollide(e.x, e.y,
-						gPlayer.image.bomb.width,
-						gPlayer.image.bomb.height,
+						gPlayer.images.bomb.width,
+						gPlayer.images.bomb.height,
 						v.x, v.y,
 						gSprites.imageTypes[v.imageTypesIndex].width,
 						gSprites.imageTypes[v.imageTypesIndex].height) then
-						if not gSprites.imageTypes[c.imageTypesIndex].background then
+						if not gSprites.imageTypes[v.imageTypesIndex].background then
 							v.shields = v.shields - 100
 						end
 					end
@@ -671,6 +674,7 @@ function update( event )
 				local explosionHeight = 5000
 
 				
+				--I tried to do bombs wrong.  This is the result.
 				if rectsCollide( v.x - bombWidth / 2, v.y - bombHeight / 2,
 								   bombWidth,
 								   bombHeight,
@@ -859,6 +863,8 @@ function update( event )
     	if not gBombs.onscreen[i].active then
     		gBombs.onscreen[i].animation:removeSelf()
     		table.remove(gBombs.onscreen, i)
+    	end
+    end
 
     for i = #gProjectiles.player, 1,-1 do
 
@@ -925,7 +931,7 @@ local function touchListener( event )
 	end
 	]]
 	--gFireThrusters = true
-	firePlayerProjectile("bomb")
+	--firePlayerProjectile("bomb")
 	
 end
 

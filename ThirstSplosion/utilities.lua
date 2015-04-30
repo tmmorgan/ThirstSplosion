@@ -215,8 +215,6 @@ function createSprite( spriteData )
 
     -- Everytime we add new sprites, we'll need to move our borders back up
     -- in the Z order or the newly created sprites will render on top of them.
-    gLeftBorder:toFront()
-    gRightBorder:toFront()
 	
 end
 
@@ -445,10 +443,58 @@ function firePlayerProjectile( weaponType )
 
         print("MISSILES: " .. gPlayer.numMissiles)
 
+    elseif projectile.weapon == "bomb" then
+        projectile.speed = 0
+        projectile.damage = 100
+        projectile.image = display.newImage("images/shields.png")
+
+        playSound("missile")
     end
 	
 	projectile.image.x = projectile.x
 	projectile.image.y = projectile.y
 	
     table.insert( gProjectiles.player, projectile )
+end
+
+--==============================================================================
+-- Function: firePlayerProjectile( weaponType (string) )
+-- Author:   Kevin Harris
+-- Modified: September 25, 2013
+-- Returns:  Nothing
+-- Descript: Fires a player projectile from the player's fighter position plus
+--           some offset.
+--==============================================================================
+function fireBomb()
+
+    local currentTime = system.getTimer()
+
+    if gPreviousTime == nil then
+        gPreviousTime = currentTime
+    end
+
+    if currentTime - gPreviousTime < gPlayer.rateOfFire then
+        -- Too soon to fire - return early.
+        return
+    else
+        -- Enough time has elapsed - fire!
+        gPreviousTime = currentTime
+    end
+
+    local bomb =
+    {
+        timeToDie = currentTime + 2,
+        x = gPlayer.x + gPlayer.images.fighter.width,
+        y = gPlayer.y,
+        active = true,
+        addedToDisplay = false
+    }
+
+    bomb.damage = 100
+    bomb.image = display.newImage("images/shields.png")
+
+    bomb.image.x = bomb.x
+    bomb.image.y = bomb.y
+
+    table.insert( gBombs.onscreen, bomb )
 end
