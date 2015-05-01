@@ -71,12 +71,21 @@ end
 function rectsCollide( rect1x, rect1y, rect1Width, rect1Height,
                        rect2x, rect2y, rect2Width, rect2Height )
 
+  --[[
   if((rect1x >= rect2x and rect1x <= rect2x + rect2Width) and (rect1y >= rect2y and rect1y <= rect2y + rect2Height)) or 
     ((rect1x + rect1Width>= rect2x and rect1x + rect1Width <= rect2x + rect2Width) and (rect1y >= rect2y and rect1y <= rect2y + rect2Height)) or
     ((rect1x >= rect2x and rect1x <= rect2x + rect2Width) and (rect1y + rect1Height>= rect2y and rect1y  + rect1Height<= rect2y + rect2Height)) or
     ((rect1x + rect1Width>= rect2x and rect1x + rect1Width <= rect2x + rect2Width) and (rect1y + rect1Height>= rect2y and rect1y  + rect1Height<= rect2y + rect2Height))  then
     return true
   end
+  ]]--
+
+  if(rect1x < rect2x + rect2Width and
+    rect1x + rect1Width > rect2x and
+    rect1y < rect2y + rect2Height and
+    rect1Height + rect1y > rect2y) then
+  return true
+end
   
   return false
 

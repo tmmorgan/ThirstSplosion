@@ -8,6 +8,7 @@
 require( "update_functions" )
 require( "delete_functions" )
 
+
 -- Pre-Load our ogg or mp3 audio files.
 local laserSound = audio.loadSound( "audio/laser.mp3" )
 local loadMissilesSound = audio.loadSound( "audio/loadMissiles.mp3" )
@@ -483,13 +484,12 @@ function fireBomb()
 
     local bomb =
     {
-        timeToDie = currentTime + 1000,
+        timeToDie = currentTime + 2000,
         x = gPlayer.x + gPlayer.images.fighter.width,
         y = gPlayer.y,
         active = true,
         addedToDisplay = false
     }
-    print("Time to die: " .. bomb.timeToDie)
     bomb.damage = 100
     bomb.image = display.newImage("images/shields.png")
 

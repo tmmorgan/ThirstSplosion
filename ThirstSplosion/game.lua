@@ -19,6 +19,7 @@ require( "utilities" )
 require( "collision" )
 require( "load_imageTypes" )
 require( "load_levelData" )
+system.activate("multitouch")
 
 local screenW = display.contentWidth
 local screenH = display.contentHeight
@@ -27,6 +28,7 @@ local halfW = display.contentWidth * 0.5
 local startAnimating = false
 local prevX = 0
 local prevY = 0
+local joyRect = display.newRect(0, 0, 60, 60)
 
 --==============================================================================
 -- Function: scene:create( event (table) )
@@ -113,8 +115,8 @@ function scene:create( event )
 
 			bomb = 
 			{
-				width = 50,
-				height = 50
+				width = 100,
+				height = 100
 			}
 		
 		},
@@ -382,7 +384,7 @@ function update( event )
 		-- Fire like there's no tomorrow!
 		--firePlayerProjectile( gPlayer.activeWeapon )
 		--firePlayerProjectile("bomb")
-		fireBomb()
+		--fireBomb()
 		
 		--Old player movement
 		--[[	
@@ -477,7 +479,6 @@ function update( event )
 	--
 	-- Update bombs.
 	--
-	print("Elapsed Time: " .. gElapsedTime)
 
 	for i = #gBombs.onscreen, 1, -1 do
 		local e = gBombs.onscreen[i]
@@ -940,6 +941,18 @@ local function touchListener( event )
 	
 end
 
+local function tapListener(event)
+	fireBomb()
+end
+
+local function joyListener(event)
+	print( "Phase: "..event.phase )
+    print( "Location: "..event.x..","..event.y )
+    print( "Unique touch ID: "..tostring(event.id) )
+    print( "----------" )
+    return true
+end
+
 -----------------------------------------------------------------------------------------
 -- END OF YOUR IMPLEMENTATION
 -----------------------------------------------------------------------------------------
@@ -949,8 +962,9 @@ scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
-
+joyRect:addEventListener("joyTouch", joyListener)
 Runtime:addEventListener( "touch", touchListener )
+Runtime:addEventListener("tap", tapListener)
 
 -----------------------------------------------------------------------------------------
 
