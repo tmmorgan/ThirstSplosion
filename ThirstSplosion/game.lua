@@ -29,6 +29,7 @@ local startAnimating = false
 local prevX = 0
 local prevY = 0
 local joyRect = display.newRect(0, 0, 60, 60)
+local bombSpeed = 20
 
 isChangingRooms = false
 roomTransitionPoint = 64
@@ -61,9 +62,9 @@ function scene:create( event )
 
 	local jslib = require( "simpleJoystick" )
 
-		js = jslib.new( 50, 100 , -550, 250)
-		js.x = display.contentWidth/2
-		js.y = display.contentHeight/2
+		js = jslib.new( 50, 100)
+		js.x = display.contentWidth/2 - 500
+		js.y = display.contentHeight/2 + 250
 	--
 		function catchTimer( e )
 			--[[
@@ -436,7 +437,14 @@ function update( event )
 		end
 		]]--
 
+<<<<<<< HEAD
 		if (not isChangingRooms) then
+=======
+		--Player movement
+
+		gPlayer.x = gPlayer.x + gSpeed * gElapsedTime * js:getXCoord()
+		gPlayer.y = gPlayer.y + gSpeed * gElapsedTime * js:getYCoord()
+>>>>>>> origin/master
 
 			gPlayer.x = gPlayer.x + gSpeed * gElapsedTime * js:getXCoord()
 			gPlayer.y = gPlayer.y + gSpeed * gElapsedTime * js:getYCoord()
@@ -482,7 +490,7 @@ function update( event )
 	--
 	-- Scroll stars from right to left.
 	--
-	
+	--[[
     for i = 1, #gStarField do
 
         -- Move the star.
@@ -494,6 +502,7 @@ function update( event )
         end
 
     end
+	]]--
 
 	--
 	-- Update explosions.
@@ -543,9 +552,17 @@ function update( event )
 						e.x, e.y,
 						gPlayer.images.bomb.width,
 						gPlayer.images.bomb.height) then
-			e.xVel = (e.x - gPlayer.x) / 4
-			e.yVel = (e.y - gPlayer.y) / 4
-			print("xVel: " .. e.xVel)
+			directionVector = {
+								x = e.x - gPlayer.x,
+								y = e.y - gPlayer.y}
+			directionVector = normalizeVector( directionVector )
+			--Extremely naive way to determine velocity
+			--e.xVel = (e.x - gPlayer.x) / 4
+			--e.yVel = (e.y - gPlayer.y) / 4
+
+			--Less naive way
+			e.xVel = directionVector.x * bombSpeed
+			e.yVel = directionVector.y * bombSpeed
 		end
 
 		--If the bomb has a velocity greater than zero, move it
