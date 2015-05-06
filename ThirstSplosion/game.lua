@@ -437,14 +437,10 @@ function update( event )
 		end
 		]]--
 
-<<<<<<< HEAD
-		if (not isChangingRooms) then
-=======
-		--Player movement
 
-		gPlayer.x = gPlayer.x + gSpeed * gElapsedTime * js:getXCoord()
-		gPlayer.y = gPlayer.y + gSpeed * gElapsedTime * js:getYCoord()
->>>>>>> origin/master
+		if (not isChangingRooms) then
+
+		--Player movement
 
 			gPlayer.x = gPlayer.x + gSpeed * gElapsedTime * js:getXCoord()
 			gPlayer.y = gPlayer.y + gSpeed * gElapsedTime * js:getYCoord()
