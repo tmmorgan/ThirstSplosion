@@ -38,14 +38,15 @@ mapId = A
 imageType = enemy1
 shields = 5
 points = 10
-speed = 150
+speed = 120
+updateFunction = updateSeekUntilPassed
 
 BEGIN_SPRITE
 mapId = B
 imageType = enemy1
 shields = 5
 points = 10
-speed = 150
+speed = 120
 updateFunction = updateSeekUntilPassed
 
 BEGIN_SPRITE

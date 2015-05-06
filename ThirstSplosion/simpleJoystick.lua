@@ -5,17 +5,17 @@
 
 local Joystick = {}
 
-function Joystick.new( innerRadius, outerRadius, xOffset, yOffset )
+function Joystick.new( innerRadius, outerRadius)
     local stage = display.getCurrentStage()
     
     local joyGroup = display.newGroup()
 
-    local bgJoystick = display.newCircle( joyGroup, xOffset, yOffset, outerRadius )
+    local bgJoystick = display.newCircle( joyGroup, 0, 0, outerRadius )
     bgJoystick:setFillColor( .2,.2,.2 )
     
     local radToDeg = 180/math.pi
     local degToRad = math.pi/180
-    local joystick = display.newCircle( joyGroup, xOffset, yOffset, innerRadius )
+    local joystick = display.newCircle( joyGroup, 0, 0, innerRadius )
     joystick:setFillColor( .8,.8,.8 )
 
     -- for easy reference later:
@@ -58,10 +58,10 @@ function Joystick.new( innerRadius, outerRadius, xOffset, yOffset )
             end
             local parent = self.parent
             local posX, posY = parent:contentToLocal(event.x, event.y)
-            angle = (math.atan2( posX - xOffset, posY  - yOffset)*radToDeg)-90
+            angle = (math.atan2( posX, posY)*radToDeg)-90
 
-            local xVector = posX - xOffset
-            local yVector = posY - yOffset
+            local xVector = posX
+            local yVector = posY
             local vectorSum = math.sqrt(math.pow(xVector, 2) + math.pow(yVector, 2))
             xCoord = xVector / vectorSum
             yCoord = yVector / vectorSum
@@ -90,16 +90,16 @@ function Joystick.new( innerRadius, outerRadius, xOffset, yOffset )
             if( distance >= stopRadius ) then
                 distance = stopRadius
                 local radAngle = angle*degToRad
-                self.x = distance*math.cos(radAngle) + xOffset
-                self.y = -distance*math.sin(radAngle) + yOffset
+                self.x = distance*math.cos(radAngle)
+                self.y = -distance*math.sin(radAngle)
             else
-                self.x = posX + xOffset
-                self.y = posY + yOffset
+                self.x = posX
+                self.y = posY
             end
             
         else
-            self.x = xOffset
-			self.y = yOffset
+            self.x = posX
+			self.y = posY
             stage:setFocus(nil, event.id)
             
             directionId = 0

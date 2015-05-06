@@ -484,7 +484,7 @@ function fireBomb()
 
     local bomb =
     {
-        timeToDie = currentTime + 2000,
+        timeToDie = currentTime + 2200,
         x = gPlayer.x + gPlayer.images.fighter.width,
         y = gPlayer.y,
         active = true,
