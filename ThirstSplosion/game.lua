@@ -115,8 +115,8 @@ function scene:create( event )
 
 			bomb = 
 			{
-				width = 100,
-				height = 100
+				width = 30,
+				height = 30
 			}
 		
 		},
@@ -482,12 +482,15 @@ function update( event )
 
 	for i = #gBombs.onscreen, 1, -1 do
 		local e = gBombs.onscreen[i]
+		--if timeToDie is greater than the system time, Explode and deal damage to all sprites in rode,ange
 		if e.timeToDie <= system.getTimer() then
-			--Explode, deal damage to all sprites in range
+			
 			e.active = false
 			createExplosion( "explosionBig", e.x, e.y)
 			for i,v in ipairs(gSprites.onscreen) do
 				if not gSprites.imageTypes[v.imageTypesIndex].background then
+					--When bombs have a sprite with collision we can replace this with sprite
+					--collision
 					if rectsCollide(e.x, e.y,
 						gPlayer.images.bomb.width,
 						gPlayer.images.bomb.height,
@@ -500,9 +503,54 @@ function update( event )
 					end
 				end
 			end
-
-
 		end
+
+		--Check for collision with the player
+		if rectsCollide(gPlayer.x, gPlayer.y,
+						gPlayer.images.fighter.width,
+						gPlayer.images.fighter.height,
+						e.x, e.y,
+						gPlayer.images.bomb.width,
+						gPlayer.images.bomb.height) then
+			e.xVel = (e.x - gPlayer.x) / 4
+			e.yVel = (e.y - gPlayer.y) / 4
+			print("xVel: " .. e.xVel)
+		end
+
+		--If the bomb has a velocity greater than zero, move it
+		if e.xVel > 0 or e.yVel > 0 then
+			local tempEX = e.x + e.xVel
+			local tempEY = e.y + e.yVel
+
+			--Check to see if the bomb is colliding with anything environmental, if not, move it
+			for i,v in ipairs(gSprites.onscreen) do
+				if not gSprites.imageTypes[v.imageTypesIndex].background then
+					if rectsCollide(tempEX, tempEY,
+						gPlayer.images.bomb.width,
+						gPlayer.images.bomb.height,
+						v.x, v.y,
+						gSprites.imageTypes[v.imageTypesIndex].width,
+						gSprites.imageTypes[v.imageTypesIndex].height) then
+						if not gSprites.imageTypes[v.imageTypesIndex].background then
+							--If it collides, stay where it is
+							tempEX = e.x
+							tempEY = e.y
+							e.xVel = 0
+							e.yVel = 0
+						end
+					end
+				end
+			end
+
+			e.x = tempEX
+			e.y = tempEY
+			e.image.x = e.x
+			e.image.y = e.y
+			print("E.x" .. e.x)
+		end
+
+
+
 	end
 
 	--
@@ -674,10 +722,6 @@ function update( event )
 				end
 				
 				--[[
-				local explosionWidth = 5000
-				local explosionHeight = 5000
-
-				
 				--I tried to do bombs wrong.  This is the result.
 				if rectsCollide( v.x - bombWidth / 2, v.y - bombHeight / 2,
 								   bombWidth,

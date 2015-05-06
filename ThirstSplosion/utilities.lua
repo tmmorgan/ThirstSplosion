@@ -495,6 +495,8 @@ function fireBomb()
 
     bomb.image.x = bomb.x
     bomb.image.y = bomb.y
+    bomb.xVel = 0
+    bomb.yVel = 0
 
     table.insert( gBombs.onscreen, bomb )
 end
