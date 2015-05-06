@@ -30,6 +30,10 @@ local prevX = 0
 local prevY = 0
 local joyRect = display.newRect(0, 0, 60, 60)
 
+isChangingRooms = false
+roomTransitionPoint = 64
+roomTransitionSpeed = 15
+
 --==============================================================================
 -- Function: scene:create( event (table) )
 -- Author:   Kevin Harris
@@ -432,24 +436,46 @@ function update( event )
 		end
 		]]--
 
-		gPlayer.x = gPlayer.x + gSpeed * gElapsedTime * js:getXCoord()
-		gPlayer.y = gPlayer.y + gSpeed * gElapsedTime * js:getYCoord()
+		if (not isChangingRooms) then
 
-		if gPlayer.y < 0 then
-			gPlayer.y = 0
-		elseif gPlayer.y > (display.contentHeight - gPlayer.images.fighter.image.height) then
-			gPlayer.y = display.contentHeight - gPlayer.images.fighter.image.height
+			gPlayer.x = gPlayer.x + gSpeed * gElapsedTime * js:getXCoord()
+			gPlayer.y = gPlayer.y + gSpeed * gElapsedTime * js:getYCoord()
+
+			if gPlayer.y < 0 then
+				gPlayer.y = 0
+			elseif gPlayer.y > (display.contentHeight - gPlayer.images.fighter.image.height) then
+				gPlayer.y = display.contentHeight - gPlayer.images.fighter.image.height
+			end
+
+			if gPlayer.x < 0 then
+				gPlayer.x = 0
+			elseif gPlayer.x > (display.contentWidth - gPlayer.images.fighter.image.height) then
+				gPlayer.x = (display.contentWidth - gPlayer.images.fighter.image.height)
+			end
+
+		
+			gPlayer.images.fighter.image.x = gPlayer.x
+			gPlayer.images.fighter.image.y = gPlayer.y
+
+			if gPlayer.x >= (screenW - roomTransitionPoint) then
+				isChangingRooms = true
+			end
+
+		else 
+
+			gPlayer.x = gPlayer.x - (roomTransitionSpeed)
+			gPlayer.images.fighter.image.x = gPlayer.x
+			gPlayer.images.fighter.image.y = gPlayer.y
+
+			if gPlayer.x <= roomTransitionPoint then
+				
+				isChangingRooms = false
+			
+			end
+
+			
+
 		end
-
-		if gPlayer.x < 0 then
-			gPlayer.x = 0
-		elseif gPlayer.x > (display.contentWidth - gPlayer.images.fighter.image.height) then
-			gPlayer.x = (display.contentWidth - gPlayer.images.fighter.image.height)
-		end
-
-	
-		gPlayer.images.fighter.image.x = gPlayer.x
-		gPlayer.images.fighter.image.y = gPlayer.y
 
 	end
 

@@ -18,7 +18,10 @@
 function updateDefault( sprite, dt )
 
     -- Have the sprite move forward.
-    sprite.x = sprite.x - sprite.speed * dt
+    if isChangingRooms then
+        sprite.x = sprite.x - roomTransitionSpeed
+
+    end
 
 end
 
