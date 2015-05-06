@@ -55,7 +55,7 @@ shields = 15
 points = 100
 speed = 75
 powerUpType = missiles
-updateFunction = updateBlocking
+updateFunction = updateSeekUntilPassed
 
 BEGIN_SPRITE
 mapId = D
@@ -65,7 +65,7 @@ points = 150
 speed = 25
 rateOfFire = 2
 powerUpType = shields
-updateFunction = updateBlockingAndFiring
+updateFunction = updateSeekUntilPassed
 
 #------------------------------------------------------------------------------
 # Setting the BEGIN_LEVEL_MAP keyword means, we're done specifying sprites and

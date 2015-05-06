@@ -117,6 +117,12 @@ function scene:create( event )
 			{
 				width = 30,
 				height = 30
+			},
+
+			explosion =
+			{
+				width = 100,
+				height = 100
 			}
 		
 		},
@@ -489,11 +495,10 @@ function update( event )
 			createExplosion( "explosionBig", e.x, e.y)
 			for i,v in ipairs(gSprites.onscreen) do
 				if not gSprites.imageTypes[v.imageTypesIndex].background then
-					--When bombs have a sprite with collision we can replace this with sprite
-					--collision
+					--If an enemy is colliding with the explosion, deal 100 damage to it
 					if rectsCollide(e.x, e.y,
-						gPlayer.images.bomb.width,
-						gPlayer.images.bomb.height,
+						gPlayer.images.explosion.width,
+						gPlayer.images.explosion.height,
 						v.x, v.y,
 						gSprites.imageTypes[v.imageTypesIndex].width,
 						gSprites.imageTypes[v.imageTypesIndex].height) then
