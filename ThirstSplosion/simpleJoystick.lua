@@ -113,14 +113,14 @@ function Joystick.new( innerRadius, outerRadius)
     
     function joyGroup:activate()
         self:addEventListener("touch", self.joystick )
-        self:addEventListener("tap", self.joystick)
+        --self:addEventListener("tap", self.joystick)
         self.directionId = 0
         self.angle = 0
         self.distance = 0
     end
     function joyGroup:deactivate()
         self:removeEventListener("touch", self.joystick )
-        self:removeEventListener("tap", self.joystick)
+        --self:removeEventListener("tap", self.joystick)
         self.directionId = 0
         self.angle = 0
         self.distance = 0

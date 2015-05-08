@@ -32,8 +32,8 @@ local joyRect = display.newRect(0, 0, 60, 60)
 local bombSpeed = 20
 
 isChangingRooms = false
-roomTransitionPoint = 64
-roomTransitionSpeed = 15
+roomTransitionPoint = 128
+roomTransitionSpeed = 25
 
 --==============================================================================
 -- Function: scene:create( event (table) )
@@ -59,6 +59,10 @@ function scene:create( event )
 	gElapsedTimeDropping = 0
 	gImageSheets = {}
 	gSequenceData = {}
+
+	gXDir = 0
+	gYDir = 0
+
 
 	local jslib = require( "simpleJoystick" )
 
@@ -97,9 +101,9 @@ function scene:create( event )
 		{
 			fighter =
 			{
-				image = display.newImageRect( "images/fighter.png", 137, 36 ),
-				width = 137,
-				height = 36
+				image = display.newImageRect( "images/LegDay_Idle.png", 128, 128 ),
+				width = 128,
+				height = 128
 -- TODO: Can Corona build a collision map?
 				--collisionMap = newCollisionMap( "Images/Player/fighter.png" )
 			},
@@ -410,7 +414,7 @@ function update( event )
 		end
 		]]--
 
-		gSpeed = 300
+		gSpeed = 450
 
 		--Nonfunctional player movement code based on joystick
 		--gPlayer.y = gPlayer.y + (gSpeed * gElapsedTime)
@@ -460,6 +464,11 @@ function update( event )
 		
 			gPlayer.images.fighter.image.x = gPlayer.x
 			gPlayer.images.fighter.image.y = gPlayer.y
+
+			if(js:getXCoord() ~= 0 or js:getYCoord() ~= 0) then
+				gXDir = js:getXCoord()
+				gYDir = js:getYCoord()
+			end
 
 			if gPlayer.x >= (screenW - roomTransitionPoint) then
 				isChangingRooms = true
@@ -549,8 +558,8 @@ function update( event )
 						gPlayer.images.bomb.width,
 						gPlayer.images.bomb.height) then
 			directionVector = {
-								x = e.x - gPlayer.x,
-								y = e.y - gPlayer.y}
+								x = (e.x + gPlayer.images.bomb.width/2) - (gPlayer.x + gPlayer.images.fighter.width/2),
+								y = (e.y + gPlayer.images.bomb.width/2) - (gPlayer.y + gPlayer.images.fighter.height/2)}
 			directionVector = normalizeVector( directionVector )
 			--Extremely naive way to determine velocity
 			--e.xVel = (e.x - gPlayer.x) / 4
@@ -590,7 +599,6 @@ function update( event )
 			e.y = tempEY
 			e.image.x = e.x
 			e.image.y = e.y
-			print("E.x" .. e.x)
 		end
 
 
@@ -1051,7 +1059,7 @@ scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
 joyRect:addEventListener("joyTouch", joyListener)
-Runtime:addEventListener( "touch", touchListener )
+--Runtime:addEventListener( "touch", touchListener )
 Runtime:addEventListener("tap", tapListener)
 
 -----------------------------------------------------------------------------------------
