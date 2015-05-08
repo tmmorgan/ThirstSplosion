@@ -92,7 +92,7 @@ function scene:create( event )
 	--
 	-- Player...
 	
-	local sheetOptions_LegDay =
+	local sheetOptions_LegDay_Idle =
 	{
 	    width = 256,
 	    height = 256,
@@ -143,8 +143,7 @@ function scene:create( event )
 			{	
 				image = display.newSprite( sheet_LegDay_Idle, sequence_LegDay_Idle ),
 				width = 128,
-				height = 128,
-
+				height = 128
 			},
 
 			laser =
