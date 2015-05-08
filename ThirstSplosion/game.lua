@@ -31,8 +31,10 @@ local prevY = 0
 local joyRect = display.newRect(0, 0, 60, 60)
 local bombSpeed = 20
 
+local loadNextRoom = false
+roomLength = (16*12)
 isChangingRooms = false
-roomTransitionPoint = 64
+roomTransitionPoint = 128
 roomTransitionSpeed = 15
 
 --==============================================================================
@@ -89,19 +91,46 @@ function scene:create( event )
 
 	--
 	-- Player...
-	--
+	--[[
+
+	local sheetOptions_LegDay_Idle =
+	{
+	    width = 256,
+	    height = 256,
+	    numFrames = 2
+	}
+
+	local sheetOptions_LegDay_Kick = 
+	{
+
+		width = 256,
+	    height = 256,
+	    numFrames = 2
+	}
+
+	local sheet_LegDay_Idle = graphics.newImageSheet( "LegDay_Idle.png", sheetOptions_LegDay_Idle )
+	local sheet_LegDay_Kick = graphics.newImageSheet( "LegDay_Kick.png", sheetOptions_LegDay_Kick )
+
+	local sequence
+
+	]]
 
 	gPlayer =
 	{
 		images =
 		{
 			fighter =
+			{	
+				image = display.newImageRect("images/LegDay_Idle.png", 128, 128),
+				width = 128,
+				height = 128,
+
+			},
+
+			fighter_sequences = 
 			{
-				image = display.newImageRect( "images/fighter.png", 137, 36 ),
-				width = 137,
-				height = 36
--- TODO: Can Corona build a collision map?
-				--collisionMap = newCollisionMap( "Images/Player/fighter.png" )
+				
+
 			},
 
 			laser =
@@ -346,29 +375,35 @@ function update( event )
 	gLevelTimeElapsed = gLevelTimeElapsed + gElapsedTime
 
 	--
-	-- Go through the level data and see if any sprites need to be
-	-- spawned during this update.
+	-- When player starts to change rooms, load the next room (roomWidth x roomHeight sprites)
 	--
 
-	for i,v in ipairs( gLevelData ) do
+	if loadNextRoom then
 
-		if gLevelTimeElapsed >= v.timeToSpawn then
+		for i,v in ipairs( gLevelData ) do
 
-			createSprite( v ) -- Based on the level data, spawn a sprite!
-			v.spawned = true  -- Mark the level data entry for removal.
-			js.putToFront()
+			if i <= roomLength then
 
-		else
+				createSprite( v ) -- Based on the level data, spawn a sprite!
+				v.spawned = true  -- Mark the level data entry for removal.
+				js.putToFront()
+
+			else
 
 			-- As soon as we hit a sprite whose spawn time has not yet expired -
 			-- we know that all the other sprites in the table are not ready as 
 			-- well, since the table is sorted by time.
-			break
+				break
+
+			end
 
 		end
 
+		loadNextRoom = false
+
 	end
-	
+
+
 	-- Check for players death!
 	if gPlayer.shields <= 0 and gPlayer.active == true then
 
@@ -463,6 +498,7 @@ function update( event )
 
 			if gPlayer.x >= (screenW - roomTransitionPoint) then
 				isChangingRooms = true
+				loadNextRoom = true
 			end
 
 		else 
