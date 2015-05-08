@@ -496,7 +496,7 @@ function fireBomb()
     }
 
     bomb.damage = 100
-    --bomb.image = display.newImage("images/canOBoom_Shake.png")
+    bomb.image = display.newImage("images/canOBoom_Shake.png")
 
     bomb.image.x = bomb.x
     bomb.image.y = bomb.y

@@ -34,7 +34,7 @@ local bombSpeed = 20
 local loadNextRoom = false
 roomLength = (16*12)
 isChangingRooms = false
-roomTransitionPoint = 128
+roomTransitionPoint = 256
 roomTransitionSpeed = 15
 
 --==============================================================================
@@ -61,6 +61,8 @@ function scene:create( event )
 	gElapsedTimeDropping = 0
 	gImageSheets = {}
 	gSequenceData = {}
+	gXDir = 0
+	gYDir = 0
 
 	local jslib = require( "simpleJoystick" )
 
@@ -162,14 +164,14 @@ function scene:create( event )
 
 			bomb = 
 			{
-				width = 30,
-				height = 30
+				width = 256,
+				height = 256
 			},
 
 			explosion =
 			{
-				width = 100,
-				height = 100
+				width = 256,
+				height = 256
 			}
 		
 		},
@@ -509,6 +511,13 @@ function update( event )
 		
 			gPlayer.images.fighter.image.x = gPlayer.x
 			gPlayer.images.fighter.image.y = gPlayer.y
+
+			if js:getXCoord() ~= 0 or js:getYCoord() ~= 0 then
+
+				gXDir = js:getXCoord()
+				gYDir = js:getYCoord()
+
+			end
 
 			if gPlayer.x >= (screenW - roomTransitionPoint) then
 				isChangingRooms = true
