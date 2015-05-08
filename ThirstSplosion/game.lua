@@ -91,9 +91,8 @@ function scene:create( event )
 
 	--
 	-- Player...
-	--[[
-
-	local sheetOptions_LegDay_Idle =
+	
+	local sheetOptions_LegDay =
 	{
 	    width = 256,
 	    height = 256,
@@ -102,18 +101,39 @@ function scene:create( event )
 
 	local sheetOptions_LegDay_Kick = 
 	{
-
 		width = 256,
 	    height = 256,
 	    numFrames = 2
 	}
 
-	local sheet_LegDay_Idle = graphics.newImageSheet( "LegDay_Idle.png", sheetOptions_LegDay_Idle )
-	local sheet_LegDay_Kick = graphics.newImageSheet( "LegDay_Kick.png", sheetOptions_LegDay_Kick )
+	local sheet_LegDay_Idle = graphics.newImageSheet( "images/LegDay_Idle.png", sheetOptions_LegDay_Idle )
+	local sheet_LegDay_Kick = graphics.newImageSheet( "images/LegDay_Kick.png", sheetOptions_LegDay_Kick )
 
-	local sequence
+	local sequence_LegDay_Idle = 
+	{
+		{
+	        name = "idle",
+	        start = 1,
+	        count = 2,
+	        time = 1000,
+	        loopCount = 0,
+	        loopDirection = "forward"
+    	}
+    
+	}
 
-	]]
+	local sequence_LegDay_Kick = 
+	{
+		{
+	        name = "kick",
+	        start = 1,
+	        count = 2,
+	        time = 500,
+	        loopCount = 1,
+	        loopDirection = "forward"
+    	}
+	}
+
 
 	gPlayer =
 	{
@@ -121,15 +141,9 @@ function scene:create( event )
 		{
 			fighter =
 			{	
-				image = display.newImageRect("images/LegDay_Idle.png", 128, 128),
+				image = display.newSprite( sheet_LegDay_Idle, sequence_LegDay_Idle ),
 				width = 128,
 				height = 128,
-
-			},
-
-			fighter_sequences = 
-			{
-				
 
 			},
 
@@ -173,6 +187,7 @@ function scene:create( event )
 		active = true
 	}
 
+	gPlayer.images.fighter.image:play()
 	gPlayer.images.fighter.image.anchorX = 0
     gPlayer.images.fighter.image.anchorY = 0
 	gPlayer.images.fighter.image.x = gPlayer.x
