@@ -24,8 +24,7 @@ if type(valueString) ~= "string" then
     print("Please input valid strings for the parameters")
     return {}
 else
-
-
+    
     local sep = ","
 
     --Sanitize the string input and remove all spaces
