@@ -166,8 +166,8 @@ function scene:create( event )
 
 			bomb = 
 			{
-				width = 256,
-				height = 256
+				width = 128,
+				height = 128
 			},
 
 			explosion =
@@ -463,7 +463,7 @@ function update( event )
 		end
 		]]--
 
-		gSpeed = 300
+		gSpeed = 450
 
 		--Nonfunctional player movement code based on joystick
 		--gPlayer.y = gPlayer.y + (gSpeed * gElapsedTime)
@@ -660,7 +660,6 @@ function update( event )
 			e.y = tempEY
 			e.image.x = e.x
 			e.image.y = e.y
-			print("E.x" .. e.x)
 		end
 
 
@@ -721,7 +720,7 @@ function update( event )
 							   gSprites.imageTypes[v.imageTypesIndex].collisionMap ) then
 
 				v.collided = true
-				gPlayer.shields = gPlayer.shields - 5
+				
 
 				print("SHIELDS: " .. gPlayer.shields)
 
@@ -736,6 +735,8 @@ function update( event )
 					createExplosion( "explosionLittle",
 									 prevX + (gPlayer.images.fighter.width / 2 ),
 									 prevY + (gPlayer.images.fighter.height / 2 ) )
+				else
+					gPlayer.shields = gPlayer.shields - 20
 
 				end
 
