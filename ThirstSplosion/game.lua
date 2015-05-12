@@ -32,6 +32,7 @@ local joyRect = display.newRect(0, 0, 60, 60)
 local bombSpeed = 20
 
 local loadNextRoom = false
+local isRunning = false
 roomLength = (16*12)
 isChangingRooms = false
 roomTransitionPoint = 256
@@ -126,7 +127,7 @@ function scene:create( event )
     	{
 	        name = "run",
 	        frames = {5, 6, 7, 8},
-	        time = 300,
+	        time = 500,
 	        loopCount = 0,
 	        loopDirection = "forward"
     	},
@@ -510,8 +511,28 @@ function update( event )
 
 			if js:getXCoord() ~= 0 or js:getYCoord() ~= 0 then
 
+				if gPlayer.images.fighter.image.sequence == "kick" and gPlayer.images.fighter.image.frame == 2 then
+
+					isRunning = false
+
+				end
+
+				if not isRunning then
+					isRunning = true
+					gPlayer.images.fighter.image:setSequence("run")
+					gPlayer.images.fighter.image:play()
+				end
+
 				gXDir = js:getXCoord()
 				gYDir = js:getYCoord()
+
+			else
+
+				if isRunning then
+					isRunning = false
+					gPlayer.images.fighter.image:setSequence("idle")
+					gPlayer.images.fighter.image:play()
+				end
 
 			end
 
@@ -616,6 +637,11 @@ function update( event )
 								x = e.x - gPlayer.x,
 								y = e.y - gPlayer.y}
 			directionVector = normalizeVector( directionVector )
+
+			gPlayer.images.fighter.image:setSequence("kick")
+			gPlayer.images.fighter.image:play()
+
+
 			--Extremely naive way to determine velocity
 			--e.xVel = (e.x - gPlayer.x) / 4
 			--e.yVel = (e.y - gPlayer.y) / 4
@@ -624,6 +650,7 @@ function update( event )
 			e.xVel = directionVector.x * bombSpeed
 			e.yVel = directionVector.y * bombSpeed
 		end
+
 
 		--If the bomb has a velocity greater than zero, move it
 		if e.xVel > 0 or e.yVel > 0 then
