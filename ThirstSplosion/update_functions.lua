@@ -129,7 +129,11 @@ end
 --==============================================================================
 function updateSeekUntilPassed( sprite, dt )
 
-    if gPlayer.active then
+    if isChangingRooms then
+        sprite.x = sprite.x - roomTransitionSpeed
+    end
+
+    if gPlayer.active and (not isChangingRooms) then
 
         -- If the sprite hasn't passed up the player - aim sprite at 
         -- player's mid point.
@@ -148,7 +152,7 @@ function updateSeekUntilPassed( sprite, dt )
         sprite.x = sprite.x + directionVector.x * (sprite.speed * dt)
         sprite.y = sprite.y + directionVector.y * (sprite.speed * dt)
 
-    else
+    elseif (not isChangingRooms) then
 
         -- If the player has already left this sprite behind - do a regular update.
         updateDefault( sprite, dt )

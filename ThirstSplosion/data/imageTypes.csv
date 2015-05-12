@@ -18,4 +18,4 @@ wallBot,Wall_Bottom.png,64,64,FALSE,TRUE,FALSE,0,0,FALSE,0,0,NA
 bear,Bear_Atlas.png,128,128,FALSE,FALSE,FALSE,0,0,TRUE,700,2,loop_forever
 topWall,Wall_Top.png,64,64,FALSE,TRUE,FALSE,0,0,FALSE,0,0,NA
 bottomWall,Wall_Bottom.png,64,64,FALSE,TRUE,FALSE,0,0,FALSE,0,0,NA
-crate,crate.png,64,64,FALSE,FALSE,FALSE,0,0,FALSE,0,0,NA
+crate,crate.png,64,64,FALSE,TRUE,FALSE,0,0,FALSE,0,0,NA
