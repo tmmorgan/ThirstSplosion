@@ -489,14 +489,42 @@ function fireBomb()
         timeToDie = currentTime + 2200,
         --x = gPlayer.x + gPlayer.images.fighter.width + 10,
         --y = gPlayer.y,
-        x = gPlayer.x + gPlayer.images.fighter.width / 2 + gXDir * (gPlayer.images.fighter.width * 3/ 4 ),
-        y = gPlayer.y + gPlayer.images.fighter.height / 2 + gYDir * (gPlayer.images.fighter.height  * 3/ 4),
+        x = gPlayer.x + gPlayer.images.fighter.width / 2 + gXDir * (gPlayer.images.fighter.width * 0 + gPlayer.images.bomb.width ),
+        y = gPlayer.y + gPlayer.images.fighter.height / 2 + gYDir * (gPlayer.images.fighter.height * 0 + gPlayer.images.bomb.height),
         active = true,
         addedToDisplay = false
     }
 
     bomb.damage = 100
-    bomb.image = display.newImage("images/canOBoom_Shake.png")
+    --bomb.image = display.newImage("images/canOBoom_Shake.png")
+
+    local sheetOptions_CanOBoom = 
+        {
+            width = 256,
+            height = 256,
+            numFrames = 4
+        }
+
+        local sheet_CanOBoom = graphics.newImageSheet( "images/canOBoom_Shake.png", sheetOptions_CanOBoom )
+
+        local sequence_CanOBoom = 
+        {
+            {
+                name = "shake",
+                start = 1,
+                count = 4,
+                time = 750,
+                loopCount = 0,
+                loopDirection = "forward"
+            }
+        
+        }
+
+
+        bomb.image = display.newSprite( sheet_CanOBoom, sequence_CanOBoom )
+
+
+        bomb.image:play()
 
     bomb.image.x = bomb.x
     bomb.image.y = bomb.y

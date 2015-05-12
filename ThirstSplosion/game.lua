@@ -35,6 +35,8 @@ local loadNextRoom = false
 roomLength = (16*12)
 isChangingRooms = false
 roomTransitionPoint = 256
+tileSize = 64
+roomNum = 0
 roomTransitionSpeed = 15
 
 --==============================================================================
@@ -144,8 +146,8 @@ function scene:create( event )
 			fighter =
 			{	
 				image = display.newSprite( sheet_LegDay_Idle, sequence_LegDay_Idle ),
-				width = 128,
-				height = 128
+				width = 256,
+				height = 256
 			},
 
 			laser =
@@ -526,17 +528,26 @@ function update( event )
 
 		else 
 
+			--Old transition code
+			--[[
 			gPlayer.x = gPlayer.x - (roomTransitionSpeed)
 			gPlayer.images.fighter.image.x = gPlayer.x
 			gPlayer.images.fighter.image.y = gPlayer.y
-
+			
 			if gPlayer.x <= roomTransitionPoint then
 				
 				isChangingRooms = false
 			
 			end
+			]]--
 
-			
+			gPlayer.x = gPlayer.x - (roomTransitionSpeed)
+			gPlayer.images.fighter.image.x = gPlayer.x
+			gPlayer.images.fighter.image.y = gPlayer.y
+
+			if gPlayer.x <= 0  then
+				isChangingRooms = false
+			end
 
 		end
 
