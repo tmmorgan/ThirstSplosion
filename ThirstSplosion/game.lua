@@ -96,46 +96,40 @@ function scene:create( event )
 	--
 	-- Player...
 	
-	local sheetOptions_LegDay_Idle =
+	local sheetOptions_LegDay =
 	{
-	    width = 256,
-	    height = 256,
-	    numFrames = 2
+	    width = 128,
+	    height = 128,
+	    numFrames = 8
 	}
 
-	local sheetOptions_LegDay_Kick = 
-	{
-		width = 256,
-	    height = 256,
-	    numFrames = 2
-	}
+	local sheet_LegDay = graphics.newImageSheet( "images/LegDay_Atlas.png", sheetOptions_LegDay )
 
-	local sheet_LegDay_Idle = graphics.newImageSheet( "images/LegDay_Idle.png", sheetOptions_LegDay_Idle )
-	local sheet_LegDay_Kick = graphics.newImageSheet( "images/LegDay_Kick.png", sheetOptions_LegDay_Kick )
-
-	local sequence_LegDay_Idle = 
+	local sequence_LegDay = 
 	{
 		{
 	        name = "idle",
-	        start = 1,
-	        count = 2,
+	        frames = {1, 2},
 	        time = 1000,
 	        loopCount = 0,
 	        loopDirection = "forward"
-    	}
-    
-	}
+    	},
 
-	local sequence_LegDay_Kick = 
-	{
-		{
+    	{
 	        name = "kick",
-	        start = 1,
-	        count = 2,
-	        time = 500,
+	        frames = {3, 4},
+	        time = 400,
 	        loopCount = 1,
 	        loopDirection = "forward"
-    	}
+    	},
+    	
+    	{
+	        name = "run",
+	        frames = {5, 6, 7, 8},
+	        time = 300,
+	        loopCount = 0,
+	        loopDirection = "forward"
+    	},
 	}
 
 
@@ -145,9 +139,9 @@ function scene:create( event )
 		{
 			fighter =
 			{	
-				image = display.newSprite( sheet_LegDay_Idle, sequence_LegDay_Idle ),
-				width = 256,
-				height = 256
+				image = display.newSprite( sheet_LegDay, sequence_LegDay ),
+				width = 128,
+				height = 128
 			},
 
 			laser =
