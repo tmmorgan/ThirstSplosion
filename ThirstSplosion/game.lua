@@ -24,8 +24,8 @@ system.activate("multitouch")
 --local screenW = display.contentWidth
 --local screenH = display.contentHeight
 --local halfW = display.contentWidth * 0.5
-local screenW = 21 * 64
-local screenH = 21 * 64
+local screenW = display.contentWidth + 128
+local screenH = display.contentHeight
 local halfW = screenW / 2
 
 local startAnimating = false
@@ -38,7 +38,7 @@ local loadNextRoom = false
 local isRunning = false
 roomLength = (21*12)
 isChangingRooms = false
-roomTransitionPoint = 128 + 28
+roomTransitionPoint = 128
 tileSize = 64
 roomNum = 0
 roomTransitionSpeed = 15
@@ -164,8 +164,8 @@ function scene:create( event )
 
 			bomb = 
 			{
-				width = 64,
-				height = 100
+				width = 32,
+				height = 90
 			},
 
 			explosion =
@@ -276,7 +276,7 @@ function scene:create( event )
 
     end
 	]]--
-	--[[
+
    	local leftBorder = display.newRect(-500,0,500, display.contentHeight)
 	leftBorder.anchorX = 0
 	leftBorder.anchorY = 0
@@ -286,15 +286,15 @@ function scene:create( event )
 	rightBorder.anchorX = 0
 	rightBorder.anchorY = 0
 	rightBorder:setFillColor(0,0,0,255)
-	]]--
+
 	gSpriteGroup = display.newGroup()
 
 	sceneGroup:insert(backgroundImage)
 	sceneGroup:insert(starGroup)
 	sceneGroup:insert(gPlayer.images.fighter.image)
 	sceneGroup:insert(gSpriteGroup)
-	--sceneGroup:insert(leftBorder)
-	--sceneGroup:insert(rightBorder)
+	sceneGroup:insert(leftBorder)
+	sceneGroup:insert(rightBorder)
 
 end
 
@@ -699,7 +699,7 @@ function update( event )
 
 		if e.x < 0 or e.x > screenW or
 		   e.y < 0 or e.y > screenH then
-			v.active = false
+			e.active = false
 		end
 
 	end
