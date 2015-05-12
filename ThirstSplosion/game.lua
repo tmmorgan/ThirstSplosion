@@ -21,21 +21,24 @@ require( "load_imageTypes" )
 require( "load_levelData" )
 system.activate("multitouch")
 
-local screenW = display.contentWidth
-local screenH = display.contentHeight
-local halfW = display.contentWidth * 0.5
+--local screenW = display.contentWidth
+--local screenH = display.contentHeight
+--local halfW = display.contentWidth * 0.5
+local screenW = 21 * 64
+local screenH = 21 * 64
+local halfW = screenW / 2
 
 local startAnimating = false
 local prevX = 0
 local prevY = 0
-local joyRect = display.newRect(0, 0, 60, 60)
+--local joyRect = display.newRect(0, 0, 60, 60)
 local bombSpeed = 20
 
 local loadNextRoom = false
 local isRunning = false
-roomLength = (16*12)
+roomLength = (21*12)
 isChangingRooms = false
-roomTransitionPoint = 256
+roomTransitionPoint = 128 + 28
 tileSize = 64
 roomNum = 0
 roomTransitionSpeed = 15
@@ -89,7 +92,7 @@ function scene:create( event )
 	timer.performWithDelay( 500, catchTimer, -1 )
 	js:putToFront()
 
-	local backgroundImage = display.newImageRect( "images/space.png", display.contentWidth, display.contentHeight )
+	local backgroundImage = display.newImageRect( "images/floor.png", display.contentWidth, display.contentHeight )
 	backgroundImage.anchorX = 0
 	backgroundImage.anchorY = 0
 	backgroundImage.x, backgroundImage.y = 0, 0
@@ -141,8 +144,8 @@ function scene:create( event )
 			fighter =
 			{	
 				image = display.newSprite( sheet_LegDay, sequence_LegDay ),
-				width = 128,
-				height = 128
+				width = 100,
+				height = 100
 			},
 
 			laser =
@@ -161,8 +164,8 @@ function scene:create( event )
 
 			bomb = 
 			{
-				width = 128,
-				height = 128
+				width = 64,
+				height = 100
 			},
 
 			explosion =
@@ -256,6 +259,7 @@ function scene:create( event )
 
 	local starGroup = display.newGroup()
 
+	--[[
     for i = 1, 50 do
 
 		local speed = math.random( 1, 3 )
@@ -271,7 +275,8 @@ function scene:create( event )
 		starGroup:insert( gStarField[i].star )
 
     end
-
+	]]--
+	--[[
    	local leftBorder = display.newRect(-500,0,500, display.contentHeight)
 	leftBorder.anchorX = 0
 	leftBorder.anchorY = 0
@@ -281,15 +286,15 @@ function scene:create( event )
 	rightBorder.anchorX = 0
 	rightBorder.anchorY = 0
 	rightBorder:setFillColor(0,0,0,255)
-
+	]]--
 	gSpriteGroup = display.newGroup()
 
 	sceneGroup:insert(backgroundImage)
 	sceneGroup:insert(starGroup)
 	sceneGroup:insert(gPlayer.images.fighter.image)
 	sceneGroup:insert(gSpriteGroup)
-	sceneGroup:insert(leftBorder)
-	sceneGroup:insert(rightBorder)
+	--sceneGroup:insert(leftBorder)
+	--sceneGroup:insert(rightBorder)
 
 end
 
@@ -495,14 +500,14 @@ function update( event )
 
 			if gPlayer.y < 0 then
 				gPlayer.y = 0
-			elseif gPlayer.y > (display.contentHeight - gPlayer.images.fighter.image.height) then
-				gPlayer.y = display.contentHeight - gPlayer.images.fighter.image.height
+			elseif gPlayer.y > (screenH - gPlayer.images.fighter.image.height) then
+				gPlayer.y = screenH - gPlayer.images.fighter.image.height
 			end
 
 			if gPlayer.x < 0 then
 				gPlayer.x = 0
-			elseif gPlayer.x > (display.contentWidth - gPlayer.images.fighter.image.height) then
-				gPlayer.x = (display.contentWidth - gPlayer.images.fighter.image.height)
+			elseif gPlayer.x > (screenW - gPlayer.images.fighter.image.height) then
+				gPlayer.x = (screenW - gPlayer.images.fighter.image.height)
 			end
 
 		
@@ -612,7 +617,8 @@ function update( event )
 			for i,v in ipairs(gSprites.onscreen) do
 				if not gSprites.imageTypes[v.imageTypesIndex].background then
 					--If an enemy is colliding with the explosion, deal 100 damage to it
-					if rectsCollide(e.x, e.y,
+					if rectsCollide(e.x - gPlayer.images.explosion.width/2, 
+						e.y - gPlayer.images.explosion.height/2,
 						gPlayer.images.explosion.width,
 						gPlayer.images.explosion.height,
 						v.x, v.y,
@@ -626,16 +632,21 @@ function update( event )
 			end
 		end
 
-		--Check for collision with the player
+		--Check for collision with the player, if colliding set velocity based on the
+		--Player's position relative to the bomb
 		if rectsCollide(gPlayer.x, gPlayer.y,
 						gPlayer.images.fighter.width,
 						gPlayer.images.fighter.height,
 						e.x, e.y,
 						gPlayer.images.bomb.width,
 						gPlayer.images.bomb.height) then
+
+			local tempXVector = e.x + gPlayer.images.bomb.width / 2 - (gPlayer.x + gPlayer.images.fighter.width / 2)
+			local tempYVector = e.y + gPlayer.images.bomb.height / 2 - (gPlayer.y + gPlayer.images.fighter.height / 2)
+
 			directionVector = {
-								x = e.x - gPlayer.x,
-								y = e.y - gPlayer.y}
+								x = tempXVector,
+								y = tempYVector}
 			directionVector = normalizeVector( directionVector )
 
 			gPlayer.images.fighter.image:setSequence("kick")
@@ -649,6 +660,9 @@ function update( event )
 			--Less naive way
 			e.xVel = directionVector.x * bombSpeed
 			e.yVel = directionVector.y * bombSpeed
+
+
+			print("x: " .. e.xVel .. " y: " .. e.yVel)
 		end
 
 
@@ -683,7 +697,10 @@ function update( event )
 			e.image.y = e.y
 		end
 
-
+		if e.x < 0 or e.x > screenW or
+		   e.y < 0 or e.y > screenH then
+			v.active = false
+		end
 
 	end
 
@@ -752,10 +769,6 @@ function update( event )
 					gPlayer.x = prevX
 					gPlayer.y = prevY
 
-					-- Create a small explosion.
-					createExplosion( "explosionLittle",
-									 prevX + (gPlayer.images.fighter.width / 2 ),
-									 prevY + (gPlayer.images.fighter.height / 2 ) )
 				else
 					gPlayer.shields = gPlayer.shields - 20
 
@@ -798,8 +811,8 @@ function update( event )
 		end
 
 		-- Remove off-screen projectiles.
-		if v.x < 0 or v.x > display.contentWidth or
-		   v.y < 0 or v.y > display.contentHeight then
+		if v.x < 0 or v.x > screenW or
+		   v.y < 0 or v.y > screenH then
 			v.active = false
 		end
 
@@ -1142,7 +1155,7 @@ scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
-joyRect:addEventListener("joyTouch", joyListener)
+--joyRect:addEventListener("joyTouch", joyListener)
 Runtime:addEventListener( "touch", touchListener )
 Runtime:addEventListener("tap", tapListener)
 

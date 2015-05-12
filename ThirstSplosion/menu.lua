@@ -43,19 +43,19 @@ function scene:create( event )
 	local sceneGroup = self.view
 
 	-- display a background image
-	local background = display.newImageRect( "images/space.png", display.contentWidth, display.contentHeight )
+	local background = display.newImageRect( "images/titleScreen.png", 1344, 768 )
 	background.anchorX = 0
 	background.anchorY = 0
 	background.x, background.y = 0, 0
 	
 	-- create/position logo/title image on upper-half of the screen
-	local titleLogo = display.newImageRect( "images/title.png", 661, 160 )
-	titleLogo.x = 600
-	titleLogo.y = 150
+	--local titleLogo = display.newImageRect( "images/title.png", 661, 160 )
+	--titleLogo.x = 600
+	--titleLogo.y = 150
 	
-	local robot = display.newImageRect( "images/robot.png", 350, 510 )
-	robot.x = 250
-	robot.y = 450
+	--local robot = display.newImageRect( "images/robot.png", 350, 510 )
+	--robot.x = 250
+	--robot.y = 450
 
 	--
 	-- Create a widget button (which will load game.lua on release)
@@ -83,11 +83,11 @@ function scene:create( event )
 	rightBorder:setFillColor(0,0,0,255)
 
 	sceneGroup:insert(background)
-	sceneGroup:insert(robot)
-	sceneGroup:insert(titleLogo)
+	--sceneGroup:insert(robot)
+	--sceneGroup:insert(titleLogo)
 	sceneGroup:insert(playBtn)
-	sceneGroup:insert(leftBorder)
-	sceneGroup:insert(rightBorder)
+	--sceneGroup:insert(leftBorder)
+	--sceneGroup:insert(rightBorder)
 
 end
 

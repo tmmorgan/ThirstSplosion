@@ -129,7 +129,7 @@ end
 --==============================================================================
 function updateSeekUntilPassed( sprite, dt )
 
-    if gPlayer.x < sprite.x and gPlayer.active then
+    if gPlayer.active then
 
         -- If the sprite hasn't passed up the player - aim sprite at 
         -- player's mid point.
