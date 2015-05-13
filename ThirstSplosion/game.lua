@@ -38,7 +38,7 @@ local loadNextRoom = false
 local isRunning = false
 roomLength = (21*12)
 isChangingRooms = false
-roomTransitionPoint = 128
+roomTransitionPoint = 160
 tileSize = 64
 roomNum = 0
 roomTransitionSpeed = 15
@@ -634,7 +634,7 @@ function update( event )
 
 		--Check for collision with the player, if colliding set velocity based on the
 		--Player's position relative to the bomb
-		if rectsCollide(gPlayer.x, gPlayer.y,
+		if rectsCollide(gPlayer.x + 14, gPlayer.y + 14,
 						gPlayer.images.fighter.width,
 						gPlayer.images.fighter.height,
 						e.x, e.y,

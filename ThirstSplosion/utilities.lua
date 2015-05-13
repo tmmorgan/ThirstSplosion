@@ -484,8 +484,8 @@ function fireBomb()
 
     --print("jsCoord " .. js:getXCoord())
 
-    local xSign = 1
-    local ySign = 1
+    local xSign = 0
+    local ySign = 0
 
     if gXDir < 0 then
         xSign = -1
@@ -500,8 +500,8 @@ function fireBomb()
         timeToDie = currentTime + 1800,
         --x = gPlayer.x + gPlayer.images.fighter.width + 10,
         --y = gPlayer.y,
-        x = gPlayer.x + gPlayer.images.fighter.width / 2 + gXDir * (gPlayer.images.fighter.width * 0 ) + gPlayer.images.bomb.width * xSign,
-        y = gPlayer.y + gPlayer.images.fighter.height / 2 + gYDir * (gPlayer.images.fighter.height * 0)  + gPlayer.images.bomb.height * ySign,
+        x = gPlayer.x + gPlayer.images.fighter.width / 2 + gXDir * (gPlayer.images.fighter.width * 0.72 ) + gPlayer.images.bomb.width * xSign,
+        y = gPlayer.y + gPlayer.images.fighter.height / 2 + gYDir * (gPlayer.images.fighter.height * 0.72)  + gPlayer.images.bomb.height * ySign,
         active = true,
         addedToDisplay = false
     }
